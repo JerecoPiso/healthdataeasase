@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pregnancy_form_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('person_id')->references('id')->on('personal_profiles')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('personal_profile_id')->references('id')->on('personal_profiles')->onDelete('restrict')->onUpdate('cascade');
             $table->string('post_partum',);
             $table->string('family_planning', length: 255);
             $table->string('type_of_delivery', length: 255);

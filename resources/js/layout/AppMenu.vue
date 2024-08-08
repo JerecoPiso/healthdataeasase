@@ -12,20 +12,21 @@ const model = ref([
         label: 'Profile',
         items: [
             {
-                label: 'Personal',
-                icon: 'bi-person-circle',
-                to: '/healthdataeasase/public/profile/personal'
-            },
-            {
-                label: 'Health',
-                icon: 'md-healthandsafety-sharp',
-                to: '/healthdataeasase/public/profile/health'
-            },
-            {
                 label: 'Household',
                 icon: 'bi-house-door-fill',
                 to: '/healthdataeasase/public/profile/household'
             },
+            {
+                label: 'Personal',
+                icon: 'bi-person-circle',
+                to: '/healthdataeasase/public/profile/personal'
+            },
+            // {
+            //     label: 'Health',
+            //     icon: 'md-healthandsafety-sharp',
+            //     to: '/healthdataeasase/public/profile/health'
+            // },
+          
             {
                 label: 'Pregnancy Form',
                 icon: 'md-pregnantwoman',

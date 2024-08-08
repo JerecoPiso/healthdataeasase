@@ -1,25 +1,42 @@
 <template>
     <div class="card flex flex-col gap-4" v-if="!isLoading">
 
-        <Button label="Show" class="w-[4em]" @click="addModalVisible = true" ><v-icon name="bi-person-plus-fill" scale="1.2"></v-icon></Button>
-        <DataTable :value="profiles" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
-            <Column field="id" header="ID"></Column>
-            <Column field="lastname" sortable header="Lastname"></Column>
-            <Column field="firstname" sortable header="Firstname"></Column>
-            <Column field="middlename" header="Middlename"></Column>
-            <Column field="birthdate" header="Birthdate"></Column>
-            <Column field="sex" sortable header="Sex"></Column>
-            <Column field="civil_status" sortable header="Civil Status"></Column>
+        <Button label="Show" class="w-[4em]"
+            @click="getHouseHoldNumber(), addModalVisible = true, personalInfoOnly = false"><v-icon
+                name="bi-house-door-fill" scale="1.2"></v-icon></Button>
 
-            <Column field="phone_number" header="Phone No."></Column>
-            
-            <Column field="educational_attainment" sortable header="Educational Attainment"></Column>
-            <Column field="work" sortable header="Work"></Column>
-        </DataTable>
-
-        <Dialog v-model:visible="addModalVisible" maximizable modal header="Profile" position="top" class="md:w-4/6 w-full"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <form @submit.prevent="insertPersonalProfile()">
+        <Dialog v-model:visible="addModalVisible" maximizable modal
+            :header="`${!personalInfoOnly ? 'HOUSEHOLD INFORMATION' : 'PERSONAL INFORMATION'}`" position="top"
+            class="md:w-4/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <form @submit.prevent="!personalInfoOnly ? insertHouseholdProfile() : insertPersonalProfile()">
+                <p class="text-base uppercase font-bold " v-if="!personalInfoOnly">Household Information</p>
+                <div class="grid grid-cols-3 gap-2" v-if="!personalInfoOnly">
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Household Number</label>
+                        <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">NHTS (National Household Targeting System)</label>
+                        <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable
+                            optionLabel="name"  class="w-full " />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Electricity</label>
+                        <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
+                            optionLabel="name"  class="w-full " />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Water Supply</label>
+                        <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
+                            optionLabel="name"  class="w-full " />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Toilet</label>
+                        <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable
+                            optionLabel="name" class="w-full " />
+                    </div>
+                </div>
+                <p class="text-base uppercase font-bold mt-3">Household Head Information</p>
                 <div class="grid grid-cols-3 gap-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Lastname</label>
@@ -40,12 +57,12 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Sex</label>
                         <Select v-model="profileInfo.sex" optionValue="name" :options="sex" optionLabel="name"
-                            placeholder="Select a City" class="w-full " />
+                             class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Civil Status</label>
                         <Select v-model="profileInfo.civil_status" optionValue="name" :options="civil_status"
-                            optionLabel="name" placeholder="Select a City" class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Phone Number</label>
@@ -55,65 +72,186 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Educational Attainment</label>
                         <Select v-model="profileInfo.educational_attainment" optionValue="name"
-                            :options="educational_attainment" editable optionLabel="name" placeholder="Select a City"
+                            :options="educational_attainment" editable optionLabel="name" 
                             class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Work</label>
                         <Select v-model="profileInfo.work" optionValue="name" :options="work" editable
-                            optionLabel="name" placeholder="Select a City" class="w-full " />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Family Head</label>
-                        <Select v-model="profileInfo.family_head_id" :options="family_head" optionValue="id" editable
-                            optionLabel="name" placeholder="Select a City" class="w-full " />
+                            optionLabel="name"  class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Relationship to Family Head</label>
                         <Select v-model="profileInfo.relation_ship_to_head" optionValue="name"
-                            :options="relationship_to_head" editable optionLabel="name" placeholder="Select a City"
+                            :options="relationship_to_head" editable optionLabel="name" 
                             class="w-full " />
                     </div>
+                </div>
+                <p class="text-base uppercase font-bold mt-3">Health Status</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Philhealth Number</label>
+                        <InputText class="w-full" v-model="healthInfo.philhealth_number" />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Blood Type</label>
+                        <Select v-model="healthInfo.blood_type" optionValue="name" :options="blood_type"
+                            optionLabel="name"  class="w-full " />
+                    </div>  
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Maintenance</label>
+                        <Select v-model="healthInfo.maintenance" optionValue="name" :options="maintenance"
+                            optionLabel="name" class="w-full " />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Height(cm)</label>
+                        <InputNumber class="w-full" v-model="healthInfo.height" inputId="integeronly" />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Weight(kl)</label>
+                        <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Health Status</label>
+                        <Select v-model="healthInfo.health_status" optionValue="name" :options="health_status"
+                            optionLabel="name" class="w-full " />
+                    </div>
+
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" />
             </form>
 
         </Dialog>
-    
+
+        <DataTable v-model:expandedRows="expandedRows" :value="households" dataKey="id" paginator :rows="5"
+            :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
+            <template #header>
+                <div class="flex flex-wrap justify-end gap-2">
+                    <Button text icon="pi pi-plus" label="Expand All" @click="expandAll" />
+                    <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
+                </div>
+            </template>
+            <Column expander style="width: 5rem" />
+            <Column field="household_number" header="Household No."></Column>
+            <Column header="Household Head">
+                <template #body="slotProps">
+                    {{ slotProps.data.id }}
+                    {{ `${slotProps.data.lastname || ''} ${slotProps.data.firstname || ''} ${slotProps.data.middlename
+        || ''}` }}
+                </template>
+            </Column>
+            <Column field="nhts" header="NHTS"></Column>
+            <Column field="electricity" header="Electricity"></Column>
+            <Column field="water_supply" header="Water Supply"></Column>
+            <Column field="toilet" header="Toilet"></Column>
+            <Column header="Action" class="w-32">
+                <template #body="slotProps">
+                    <button type="button" class="bg-emerald-500 text-white py-1 px-2 rounded-sm"
+                        v-tooltip.top="'Add house member'"
+                        @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true"><v-icon
+                            name="bi-person-circle"></v-icon></button>
+                    <button type="button" class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
+                        v-tooltip.top="'Archive household member'"><v-icon name="bi-trash"></v-icon></button>
+                    <!-- <Button v-tooltip.left="'Add house member'" @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true" severity="info" ><v-icon name="bi-person-circle"></v-icon></Button> -->
+                </template>
+            </Column>
+            <template #expansion="slotProps">
+                <div class="p-4">
+                    <p class="uppercase font-bold">Household Members ({{ slotProps.data.household_number }})</p>
+                    <DataTable :value="slotProps.data.personal_profiles">
+                        <Column field="lastname" header="Lastname"></Column>
+                        <Column field="firstname" header="Firstname"></Column>
+                        <Column field="middlename" header="Middlename"></Column>
+                        <Column field="sex" header="Sex"></Column>
+                        <Column field="civil_status" header="Civil Status"></Column>
+                        <Column field="relation_ship_to_head" header="Relationship to Head"></Column>
+                    </DataTable>
+                </div>
+            </template>
+        </DataTable>
     </div>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useToast } from "primevue/usetoast";
-import { civil_status, educational_attainment, relationship_to_head, sex, work } from '@/service/SelectDatas.js'
+import { blood_type, civil_status, educational_attainment, electricity, health_status, maintenance, nhts, relationship_to_head, sex, toilet, water_supply, work } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
-
-const family_head = ref([
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Juan Cruz' },
-])
 const isLoading = ref(true)
-const profileInfo = ref({
-    lastname: '',
-    firstname: '',
-    middlename: '',
-    birthdate: '',
-    sex: '',
-    civil_status: '',
-    educational_attainment: '',
-    work: '',
-    family_head_id: '',
-    relation_ship_to_head: '',
-    phone_number: ''
+const healthInfo = ref({
+    philhealth_number: '',
+    blood_type: '',
+    maintenance: '',
+    height: 0,
+    weight: 0,
+    bmi: '',
+    health_status: ''
 })
-const profiles = ref([])
+const householdInfo = ref({
+    household_number: '',
+    nhts: '',
+    electricity: '',
+    water_supply: '',
+    toilet: ''
+})
+// 
+const personalInfoOnly = ref(true)
+const profileInfo = ref({
+    household_profile_id: '',
+    lastname: '345345',
+    firstname: '345',
+    middlename: '3454',
+    birthdate: '',
+    sex: 'Male',
+    civil_status: 'Single',
+    educational_attainment: 'Elementary Level',
+    work: 'Farmer',
+    relation_ship_to_head: 'Son',
+    phone_number: '09656585982',
+})
+const households = ref([])
+const expandedRows = ref({});
+const router = useRouter()
 const toast = useToast();
-
 const addModalVisible = ref(false)
 onMounted(async () => {
-    await getPersonalProfile()
+    await getHousehold()
     isLoading.value = false
 })
+// const onRowExpand = (event) => {
+//     toast.add({ severity: 'info', summary: 'Product Expanded', detail: event.data.name, life: 3000 });
+// };
+// const onRowCollapse = (event) => {
+//     toast.add({ severity: 'success', summary: 'Product Collapsed', detail: event.data.name, life: 3000 });
+// };
+const expandAll = () => {
+    expandedRows.value = households.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
+};
+const collapseAll = () => {
+    expandedRows.value = null;
+};
+async function insertHouseholdProfile() {
+    try {
+        if (profileInfo.value.birthdate) {
+            const date = new Date(profileInfo.value.birthdate);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            profileInfo.value.birthdate = `${year}-${month}-${day}`;
+        }
+        const response = await window.axios.post(`${window.baseurl}api/household/insertHousehold`, { ...profileInfo.value, ...householdInfo.value, ...healthInfo.value }, {
+            headers: {
+                'Authorization': `Bearer ${VueCookies.get('token')}`
+            }
+        })
+        addModalVisible.value = false
+        clearVariables()
+        await getHousehold()
+        toast.add({ severity: 'info', summary: 'Info', detail: 'Saved successfully', life: 3000 });
+    } catch (err) {
+        console.log(err)
+    }
+}
 async function insertPersonalProfile() {
     try {
         if (profileInfo.value.birthdate) {
@@ -123,27 +261,60 @@ async function insertPersonalProfile() {
             const day = String(date.getDate()).padStart(2, '0');
             profileInfo.value.birthdate = `${year}-${month}-${day}`;
         }
-        const response = await window.axios.post(`${window.baseurl}api/personalprofile/insertPersonalProfile`, profileInfo.value, {
+        const response = await window.axios.post(`${window.baseurl}api/personalprofile/insertPersonalProfile`, { ...profileInfo.value, ...healthInfo.value }, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
             }
         })
         addModalVisible.value = false
+        clearVariables()
         toast.add({ severity: 'info', summary: 'Info', detail: 'Saved successfully', life: 3000 });
+        router.push({ name: 'personal' })
     } catch (err) {
         console.log(err)
     }
 }
-async function getPersonalProfile() {
-    await window.axios.post(`${window.baseurl}api/personalprofile/getPersonalProfile`, {}, {
+async function getHousehold() {
+    await window.axios.post(`${window.baseurl}api/household/getHousehold`, {}, {
         headers: {
             'Authorization': `Bearer ${VueCookies.get('token')}`
         }
     }).then(response => {
-        profiles.value = response.data.data
         console.log(response.data)
+        households.value = response.data.data
     }).catch(err => {
         console.error(err)
     })
+}
+async function getHouseHoldNumber() {
+    await window.axios.post(`${window.baseurl}api/household/getHouseHoldNumber`, {}, {
+        headers: {
+            'Authorization': `Bearer ${VueCookies.get('token')}`
+        }
+    }).then(response => {
+        if (response.statusText === "OK") {
+            householdInfo.value.household_number = response.data.householdNumber;
+        }
+
+    }).catch(err => {
+        console.error(err)
+    })
+}
+function clearVariables() {
+    for (const key in profileInfo.value) {
+
+        profileInfo.value[key] = ''
+    }
+    for (const key in householdInfo.value) {
+        householdInfo.value[key] = ''
+    }
+    for (const key in healthInfo.value) {
+        if (typeof profileInfo.value[key] === 'string') {
+            healthInfo.value[key] = ''
+        } else {
+            healthInfo.value[key] = 0
+        }
+
+    }
 }
 </script>

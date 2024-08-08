@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('household_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('person_id')->references('id')->on('personal_profiles')->onDelete('restrict')->onUpdate('cascade');
+            // household head
+            $table->string('household_head', length: 100)->nullable();
             $table->string("household_number")->nullable();
             $table->string("nhts", length: 255);
             $table->string("electricity", length: 45);
             $table->string("water_supply", length: 45);
             $table->string("toilet", length: 45);
             $table->smallInteger('archive')->default('0');
-
             $table->timestamps();
         });
     }
