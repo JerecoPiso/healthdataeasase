@@ -121,7 +121,7 @@
             </form>
 
         </Dialog>
-        <DataTable v-model:expandedRows="expandedRows" :value="households" dataKey="id"  :rows="5"
+        <DataTable v-model:expandedRows="expandedRows" :value="households" dataKey="id" :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
             <template #header>
                 <div class="flex justify-between">
@@ -135,28 +135,28 @@
                         <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
                         <div class="flex  ">
                             <IconField>
-                            <InputIcon class="pi pi-search" />
-                            <InputText  placeholder="Search" v-model="search" @keyup="getPersonalProfile()"/>
-                        </IconField>
-                    </div>
+                                <InputIcon class="pi pi-search" />
+                                <InputText placeholder="Search" v-model="search" @keyup="getHousehold()" />
+                            </IconField>
+                        </div>
                     </div>
                 </div>
             </template>
             <Column expander style="width: 5rem" />
             <Column field="household_number" header="Household No."></Column>
-            <Column field="household_head" header="Household Head">
-                
-            </Column>
+            <Column field="household_head" header="Household Head"></Column>
             <Column field="nhts" header="NHTS"></Column>
             <Column field="electricity" header="Electricity"></Column>
             <Column field="water_supply" header="Water Supply"></Column>
             <Column field="toilet" header="Toilet"></Column>
-            <Column header="Action" class="w-32">
+            <Column header="Action" class="w-40">
                 <template #body="slotProps">
                     <button type="button" class="bg-emerald-500 text-white py-1 px-2 rounded-sm"
                         v-tooltip.top="'Add house member'"
                         @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true"><v-icon
                             name="bi-person-circle"></v-icon></button>
+                    <button type="button" class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
+                        v-tooltip.top="'Update household information'"><v-icon name="fa-edit"></v-icon></button>
                     <button type="button" @click="id = slotProps.data.id, confirmArchive()"
                         class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Archive household member'"><v-icon name="bi-trash"></v-icon></button>
