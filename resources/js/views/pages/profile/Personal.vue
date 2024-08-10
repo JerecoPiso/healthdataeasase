@@ -98,8 +98,22 @@
 
         </Dialog>
         <!-- <Button label="Show" class="w-[4em]" @click="editHealthModal = true" ><v-icon name="bi-person-plus-fill" scale="1.2"></v-icon></Button> -->
-        <DataTable :value="profiles" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+        <DataTable :value="profiles" :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
             tableStyle="min-width: 50rem">
+            <template #header>
+                <div class="flex justify-between">
+                    <div class="flex items-center justify-center gap-x-2">
+                    </div>
+                    <div class="flex  ">
+                        <span class="relative">
+                            <InputText placeholder="Keyword Search" v-model="search" @keyup="getPersonalProfile()"
+                                class="pl-10 py-2 font-normal border border-slate-200 pr-10 w-full" />
+                            <v-icon class="pi pi-search absolute top-2/4 -mt-[0.5em] left-2 text-slate-400" scale="1.1"
+                                name="fa-search"></v-icon>
+                        </span>
+                    </div>
+                </div>
+            </template>
             <!-- <Column field="id" header="ID"></Column> -->
             <Column field="lastname" sortable header="Lastname"></Column>
             <Column field="firstname" sortable header="Firstname"></Column>
@@ -125,6 +139,10 @@
                             name="bi-trash"></v-icon></button>
                 </template>
             </Column>
+            <template #footer>
+                <Paginator v-on:page="getPersonalProfile()" ref="paginator" :rows="10" :totalRecords="totalRecords"
+                    :rowsPerPageOptions="[10, 25, 50, 100]"></Paginator>
+            </template>
         </DataTable>
     </div>
 </template>
@@ -134,7 +152,6 @@ import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { civil_status, blood_type, educational_attainment, health_status, maintenance, relationship_to_head, sex, work } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
-
 const confirm = useConfirm();
 const editPersonalProfileModal = ref(false)
 const editHealthModal = ref(false)
@@ -148,7 +165,9 @@ const healthInfo = ref({
     bmi: '',
     health_status: ''
 })
+const id = ref(0)
 const isLoading = ref(true)
+const paginator = ref(null)
 const profileInfo = ref({
     id: '',
     lastname: '',
@@ -163,9 +182,10 @@ const profileInfo = ref({
     relation_ship_to_head: '',
     phone_number: ''
 })
-const id = ref(0)
 const profiles = ref([])
+const search = ref('')
 const toast = useToast();
+const totalRecords = ref(1)
 onMounted(async () => {
     await getPersonalProfile()
     isLoading.value = false
@@ -234,12 +254,27 @@ async function updateHealthProfile() {
     }
 }
 async function getPersonalProfile() {
-    await window.axios.post(`${window.baseurl}api/personalprofile/getPersonalProfile`, {}, {
+    let data = null;
+    if (paginator.value === null) {
+        data = {
+            page: 0 + 1,
+            recordPerPage: 10,
+            search: search.value
+        }
+    } else {
+        data = {
+            page: paginator.value.page + 1,
+            recordPerPage: paginator.value.d_rows,
+            search: search.value
+        }
+    }
+    await window.axios.post(`${window.baseurl}api/personalprofile/getPersonalProfile`, data, {
         headers: {
             'Authorization': `Bearer ${VueCookies.get('token')}`
         }
     }).then(response => {
         profiles.value = response.data.data
+        totalRecords.value = response.data.count
         console.log(response.data)
     }).catch(err => {
         console.error(err)

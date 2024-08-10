@@ -42,6 +42,8 @@ import Select from 'primevue/select';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputMask from 'primevue/inputmask';
+import Paginator from 'primevue/paginator';
+
 import SelectButton from 'primevue/selectbutton';
 import Toast from 'primevue/toast';
 import StyleClass from 'primevue/styleclass';
@@ -62,6 +64,7 @@ app.component('InputNumber', InputNumber);
 app.component('DatePicker', DatePicker)
 app.component("Select", Select)
 app.component("InputMask", InputMask)
+app.component("Paginator", Paginator)
 app.component("SelectButton", SelectButton)
 app.component("Toast", Toast)
 app.directive('tooltip', Tooltip);

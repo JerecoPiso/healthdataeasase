@@ -126,12 +126,11 @@
             </form>
 
         </Dialog>
-
         <DataTable v-model:expandedRows="expandedRows" :value="households" dataKey="id" paginator :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
             <template #header>
                 <div class="flex flex-wrap justify-end gap-2">
-                    <Button text icon="pi pi-plus" label="Expand All" @click="expandAll" />
+                    <Button text icon="pi pi-plus" label="Expand All Household Members" @click="expandAll" />
                     <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
                 </div>
             </template>
@@ -227,12 +226,7 @@ onMounted(async () => {
     await getHousehold()
     isLoading.value = false
 })
-// const onRowExpand = (event) => {
-//     toast.add({ severity: 'info', summary: 'Product Expanded', detail: event.data.name, life: 3000 });
-// };
-// const onRowCollapse = (event) => {
-//     toast.add({ severity: 'success', summary: 'Product Collapsed', detail: event.data.name, life: 3000 });
-// };
+
 const expandAll = () => {
     expandedRows.value = households.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
 };

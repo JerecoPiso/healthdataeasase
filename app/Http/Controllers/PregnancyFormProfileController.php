@@ -13,9 +13,16 @@ class PregnancyFormProfileController extends Controller
         try {
             $pregnancies = PregnancyFormProfile::leftJoin('personal_profiles as profile', 'pregnancy_form_profiles.personal_profile_id',  '=', 'profile.id')
                 ->where('pregnancy_form_profiles.archive', 0)
+                ->where(function ($query) use ($request) {
+                    $query->where('profile.firstname', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('profile.lastname', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('profile.middlename', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('pregnancy_form_profiles.family_planning', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('pregnancy_form_profiles.type_of_delivery', 'LIKE', '%' . $request->search . '%');
+                })
                 ->orderBy('profile.lastname', 'asc')
                 ->get(['pregnancy_form_profiles.*', 'profile.lastname', 'profile.firstname', 'profile.middlename']);
-            return response()->json(['message' => 'Successful', 'status' => 'success', 'pregnancies' => $pregnancies], 201);
+            return response()->json(['message' => 'Successful', 'status' => 'success', 'pregnancies' => $pregnancies, 'count' => $pregnancies->count()], 201);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }

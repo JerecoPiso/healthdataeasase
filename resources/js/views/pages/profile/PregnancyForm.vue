@@ -2,10 +2,25 @@
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
-        <Button label="Show" class="w-[4em]" @click="updatePregnancyOrNot = false, addUpdateModalVisible = true"><v-icon name="co-user-female"
-                scale="1.2"></v-icon></Button>
-        <DataTable :value="pregnancies" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+      
+        <DataTable :value="pregnancies"  :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
             tableStyle="min-width: 50rem">
+            <template #header>
+                <div class="flex justify-between">
+                    <div class="flex items-center justify-center gap-x-2">
+                        <Button label="Show" class="w-[4em]" @click="updatePregnancyOrNot = false, addUpdateModalVisible = true"><v-icon name="co-user-female"
+                            scale="1.2"></v-icon></Button>
+                    </div>
+                    <div class="flex  ">
+                        <span class="relative">
+                            <InputText placeholder="Keyword Search" v-model="search" @keyup="getPregnancies()"
+                                class="pl-10 py-2 font-normal border border-slate-200 pr-10 w-full" />
+                            <v-icon class="pi pi-search absolute top-2/4 -mt-[0.5em] left-2 text-slate-400" scale="1.1"
+                                name="fa-search"></v-icon>
+                        </span>
+                    </div>
+                </div>
+            </template>
                 <Column field="lastname" header="Lastname"></Column>
                 <Column field="firstname" header="Firstname"></Column>
                 <Column field="middlename" header="Middlename"></Column>
@@ -27,6 +42,10 @@
                             name="bi-trash"></v-icon></button>
                 </template>
             </Column>
+            <template #footer>
+                <Paginator v-on:page="getPregnancies()" ref="paginator" :rows="10" :totalRecords="totalRecords"
+                    :rowsPerPageOptions="[10, 25, 50, 100]"></Paginator>
+            </template>
         </DataTable>
 
         <Dialog v-model:visible="addUpdateModalVisible" maximizable modal header="Pregnancy Form" position="top"
@@ -93,6 +112,7 @@ const confirm = useConfirm();
 const females = ref([])
 const isLoading = ref(true)
 const id = ref(0)
+const paginator = ref(null)
 const pregnancies = ref([])
 const pregnancyInfo = ref({
     id: '',
@@ -104,9 +124,10 @@ const pregnancyInfo = ref({
     edc: '',
     gp: 0
 })
-const updatePregnancyOrNot = ref(false)
+const search = ref('')
 const toast = useToast();
-
+const totalRecords = ref('')
+const updatePregnancyOrNot = ref(false)
 watch(
     () => pregnancyInfo.value.lmp,
     () => {
@@ -142,12 +163,27 @@ async function getFemales() {
     })
 }
 async function getPregnancies() {
-    await window.axios.post(`${window.baseurl}api/pregnancy/getPregnancies`, {}, {
+    let data = null;
+    if (paginator.value === null) {
+        data = {
+            page: 0 + 1,
+            recordPerPage: 10,
+            search: search.value
+        }
+    } else {
+        data = {
+            page: paginator.value.page + 1,
+            recordPerPage: paginator.value.d_rows,
+            search: search.value
+        }
+    }
+    await window.axios.post(`${window.baseurl}api/pregnancy/getPregnancies`, data, {
         headers: {
             'Authorization': `Bearer ${VueCookies.get('token')}`
         }
     }).then(response => {
         pregnancies.value = response.data.pregnancies
+        totalRecords.value = response.data.count
         console.log(response.data.pregnancies)
     }).catch(err => {
         console.error(err)

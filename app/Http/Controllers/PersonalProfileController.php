@@ -93,13 +93,12 @@ class PersonalProfileController extends Controller
     {
         try {
             // leftJoin('health_profiles', 'personal_profiles.id')->where('archive', 0)->orderBy('id', 'desc')->get()
-            $profile = PersonalProfile::PersonalProfileWithHealthProfile();
-            return response()->json(['data' => $profile]);
+            $profile = PersonalProfile::PersonalProfileWithHealthProfile($request);
+            return response()->json(['data' => $profile, 'count' => $profile->count()]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
-
     public function archivePersonalProfile(Request $request)
     {
         try {
