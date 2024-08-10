@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthProfileController;
 use App\Http\Controllers\PersonalProfileController;
 use App\Http\Controllers\HouseholdProfileController;
@@ -13,6 +14,10 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
+});
+
+Route::prefix('dashboard')->middleware('auth:sanctum')->controller(DashboardController::class)->group(function () {
+    Route::get('getCounts', 'getCounts');
 });
 Route::prefix('personalprofile')->middleware('auth:sanctum')->controller(PersonalProfileController::class)->group(function () {
     Route::post('insertPersonalProfile', 'insertPersonalProfile');
@@ -27,6 +32,7 @@ Route::prefix('household')->middleware('auth:sanctum')->controller(HouseholdProf
     Route::post('getHousehold', 'getHousehold');
     Route::post('getHouseHoldNumber', 'getHouseHoldNumber');
 
+    Route::post('updateHousehold', 'updateHousehold');
     Route::delete('archiveHouseholdProfile/{id}', 'archiveHouseholdProfile');
 });
 Route::prefix('healthprofile')->middleware('auth:sanctum')->controller(HealthProfileController::class)->group(function () {

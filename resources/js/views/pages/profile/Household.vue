@@ -1,34 +1,27 @@
 <template>
+      <Spinner v-if="isLoading" />
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
-        <Dialog v-model:visible="updateHouseholdModalVisible" maximizable modal header="Update Household Information">
-            <div class="grid grid-cols-3 gap-2">
-                <div class="md:col-span-1 col-span-3">
-                    <label for="">Household Number</label>
-                    <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" />
-                </div>
-                <div class="md:col-span-1 col-span-3">
-                    <label for="">NHTS (National Household Targeting System)</label>
-                    <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable optionLabel="name"
-                        class="w-full " />
-                </div>
-                <div class="md:col-span-1 col-span-3">
-                    <label for="">Electricity</label>
-                    <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
-                        optionLabel="name" class="w-full " />
-                </div>
-                <div class="md:col-span-1 col-span-3">
-                    <label for="">Water Supply</label>
-                    <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
-                        optionLabel="name" class="w-full " />
-                </div>
-                <div class="md:col-span-1 col-span-3">
-                    <label for="">Toilet</label>
-                    <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable
-                        optionLabel="name" class="w-full " />
-                </div>
-            </div>
+        <Dialog v-model:visible="updateHouseholdModalVisible" maximizable modal header="Update Household Information"
+            class="md:w-2/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <form @submit.prevent="updateHousehold()">
+                <!-- <label for="">Household Number</label>
+                <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" /> -->
+                <label for="">NHTS (National Household Targeting System)</label>
+                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable optionLabel="name"
+                    class="w-full " />
+                <label for="">Electricity</label>
+                <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
+                    optionLabel="name" class="w-full " />
+                <label for="">Water Supply</label>
+                <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
+                    optionLabel="name" class="w-full " />
+                <label for="">Toilet</label>
+                <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable optionLabel="name"
+                    class="w-full " />
+                <Button label="Submit" type="submit" class="w-full mt-2" />
+            </form>
         </Dialog>
         <Dialog v-model:visible="addModalVisible" maximizable modal
             :header="`${!personalInfoOnly ? 'HOUSEHOLD INFORMATION' : 'PERSONAL INFORMATION'}`" position="top"
@@ -82,6 +75,11 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Birthdate</label>
                         <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" />
+                    </div>
+                   
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Age</label>
+                        <InputText class="w-full" v-model="profileInfo.age" disabled />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Sex</label>
@@ -139,6 +137,10 @@
                         <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
+                        <label for="">BMI(Body Mass Index)</label>
+                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" :useGrouping="false" disabled />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
                         <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
                             optionLabel="name" class="w-full " />
@@ -183,7 +185,8 @@
                         v-tooltip.top="'Add house member'"
                         @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true"><v-icon
                             name="bi-person-circle"></v-icon></button>
-                    <button type="button" @click="setForUpdateHousehold(slotProps.data), updateHouseholdModalVisible = true"
+                    <button type="button"
+                        @click="setForUpdateHousehold(slotProps.data), updateHouseholdModalVisible = true"
                         class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update household information'"><v-icon name="fa-edit"></v-icon></button>
                     <button type="button" @click="id = slotProps.data.id, confirmArchive()"
@@ -213,10 +216,12 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useConfirm } from "primevue/useconfirm";
 import { useRouter } from 'vue-router'
 import { useToast } from "primevue/usetoast";
+import { calculateBMI, calculateAge } from '@/service/Calculations.js'
+
 import { blood_type, civil_status, educational_attainment, electricity, health_status, maintenance, nhts, relationship_to_head, sex, toilet, water_supply, work } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const addModalVisible = ref(false)
@@ -235,6 +240,7 @@ const healthInfo = ref({
 })
 const households = ref([])
 const householdInfo = ref({
+    id: '',
     household_number: '',
     nhts: '',
     electricity: '',
@@ -249,6 +255,7 @@ const profileInfo = ref({
     middlename: '3454',
     suffix: '',
     birthdate: '',
+    age: '',
     sex: 'Male',
     civil_status: 'Single',
     educational_attainment: 'Elementary Level',
@@ -262,6 +269,18 @@ const search = ref('')
 const totalRecords = ref(0)
 const toast = useToast();
 const updateHouseholdModalVisible = ref(false)
+watch(
+    () => healthInfo.value.weight,
+    () => {
+        healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
+    }
+)
+watch(
+    () => profileInfo.value.birthdate,
+    () => {
+        profileInfo.value.age = calculateAge(profileInfo.value.birthdate)
+    }
+)
 onMounted(async () => {
     await getHousehold()
     isLoading.value = false
@@ -357,6 +376,23 @@ async function getHouseHoldNumber() {
         console.error(err)
     })
 }
+async function updateHousehold() {
+    try {
+        console.log(householdInfo.value)
+        const response = await window.axios.post(`${window.baseurl}api/household/updateHousehold`, householdInfo.value, {
+            headers: {
+                'Authorization': `Bearer ${VueCookies.get('token')}`
+            }
+        })
+        updateHouseholdModalVisible.value = false
+        clearVariables()
+        await getHousehold()
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Updated successfully', life: 3000 });
+        console.log(response.data)
+    } catch (err) {
+        console.log(err)
+    }
+}
 function confirmArchive() {
     confirm.require({
         message: 'Are you sure you want to archive?',
@@ -400,7 +436,6 @@ function clearVariables() {
     }
 }
 function setForUpdateHousehold(_householdInfo) {
-    console.log(_householdInfo)
     for (const key in householdInfo.value) {
         householdInfo.value[key] = _householdInfo[key]
     }

@@ -1,4 +1,6 @@
 <template>
+      <Spinner v-if="isLoading" />
+
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
@@ -88,6 +90,10 @@
                         <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
+                        <label for="">BMI(Body Mass Index)</label>
+                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" :useGrouping="false" disabled />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
                         <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
                             optionLabel="name" class="w-full " />
@@ -144,9 +150,10 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
+import { calculateBMI } from '@/service/Calculations.js'
 import { civil_status, blood_type, educational_attainment, health_status, maintenance, relationship_to_head, sex, work } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const confirm = useConfirm();
@@ -159,7 +166,7 @@ const healthInfo = ref({
     maintenance: '',
     height: 0,
     weight: 0,
-    bmi: '',
+    bmi: 0,
     health_status: ''
 })
 const id = ref(0)
@@ -183,6 +190,12 @@ const profiles = ref([])
 const search = ref('')
 const toast = useToast();
 const totalRecords = ref(1)
+watch(
+    () => healthInfo.value.weight,
+    () => {
+        healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
+    }
+)
 onMounted(async () => {
     await getPersonalProfile()
     isLoading.value = false

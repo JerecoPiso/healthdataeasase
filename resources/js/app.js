@@ -31,7 +31,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import VueCookies from 'vue-cookies';
 import InputText from 'primevue/inputtext';
-
+import Spinner from './components/Spinner.vue';
 import ConfirmDialog from 'primevue/confirmdialog';
 
 import Button from 'primevue/button';
@@ -51,8 +51,8 @@ import StyleClass from 'primevue/styleclass';
 import Tooltip from 'primevue/tooltip';
 import InputNumber from 'primevue/inputnumber';
 
-import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp,  RiDashboardLine } from "oh-vue-icons/icons";
-addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
+import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch,FaSpinner, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp,  RiDashboardLine } from "oh-vue-icons/icons";
+addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch,FaSpinner, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
 const app = createApp(App);
 app.component('DataTable', DataTable);
 app.component('ConfirmDialog', ConfirmDialog)
@@ -70,6 +70,7 @@ app.component("InputMask", InputMask)
 app.component("Paginator", Paginator)
 app.component("SelectButton", SelectButton)
 app.component("Toast", Toast)
+app.component('Spinner', Spinner)
 app.directive('tooltip', Tooltip);
 
 app.directive('styleclass', StyleClass);

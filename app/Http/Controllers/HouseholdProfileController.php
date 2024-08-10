@@ -48,7 +48,7 @@ class HouseholdProfileController extends Controller
                 "maintenance" => $request->maintenance,
                 "height" => $request->height,
                 "weight" => $request->weight,
-                "bmi" => 26.5,
+                "bmi" => $request->bmi,
                 "health_status" => $request->health_status,
             ]);
             HouseholdProfile::where('id', $household->id)->update([
@@ -89,6 +89,7 @@ class HouseholdProfileController extends Controller
                         ->orWhere('household_profiles.toilet', 'LIKE', '%' . $request->search . '%');
                 })
                 ->where('household_profiles.archive', 0);
+                
             $totalHousehold = $households->count();
             $householdPage = $households->orderBy('household_profiles.id', 'desc')
                 ->skip((intval($request->page) - 1) * ($totalHousehold > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
@@ -97,6 +98,20 @@ class HouseholdProfileController extends Controller
             return response()->json(['data' => $householdPage, 'count' => $totalHousehold]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
+    public function updateHousehold(Request $request){
+        try{
+            HouseholdProfile::where('id', $request->id)->update([
+                // 'household_number' =>  $request->household_number,
+                'nhts' => $request->nhts,
+                'electricity' => $request->electricity,
+                'water_supply' => $request->water_supply,
+                'toilet' => $request->toilet,
+            ]);
+            return response()->json(['message' => 'Update successful', 'status' => 'success'], 201);
+        }catch(\Illuminate\Database\QueryException $e){
+            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
     public function archiveHouseholdProfile(Request $request)

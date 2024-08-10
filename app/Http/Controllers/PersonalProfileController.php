@@ -51,7 +51,7 @@ class PersonalProfileController extends Controller
                 "maintenance" => $request->maintenance,
                 "height" => $request->height,
                 "weight" => $request->weight,
-                "bmi" => 26.5,
+                "bmi" => $request->bmi,
                 "health_status" => $request->health_status,
             ]);
             if ($profile) {

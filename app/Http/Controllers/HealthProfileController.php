@@ -19,7 +19,7 @@ class HealthProfileController extends Controller
                     'maintenance' => $request->maintenance,
                     'height' => $request->height,
                     'weight' => $request->weight,
-                    'bmi' => $request->bmi,
+                    "bmi" => $request->bmi,
                     'health_status' => $request->health_status
                 ]);
             if ($health) {
