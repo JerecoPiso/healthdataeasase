@@ -51,6 +51,10 @@
                         <InputText class="w-full" v-model="profileInfo.middlename" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
+                        <label for="">Suffix</label>
+                        <InputText class="w-full" v-model="profileInfo.suffix" />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
                         <label for="">Birthdate</label>
                         <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" />
                     </div>
@@ -194,13 +198,12 @@ const householdInfo = ref({
     water_supply: '',
     toilet: ''
 })
-// 
-const personalInfoOnly = ref(true)
 const profileInfo = ref({
     household_profile_id: '',
     lastname: '345345',
     firstname: '345',
     middlename: '3454',
+    suffix: '',
     birthdate: '',
     sex: 'Male',
     civil_status: 'Single',
@@ -209,6 +212,9 @@ const profileInfo = ref({
     relation_ship_to_head: 'Son',
     phone_number: '09656585982',
 })
+// 
+const personalInfoOnly = ref(true)
+
 const households = ref([])
 const expandedRows = ref({});
 const router = useRouter()

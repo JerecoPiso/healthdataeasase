@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PersonalProfile;
 use Illuminate\Http\Request;
 use App\Models\HealthProfile;
+use Illuminate\Support\Facades\DB;
 
 class PersonalProfileController extends Controller
 {
@@ -12,7 +13,15 @@ class PersonalProfileController extends Controller
     public function getFemales(Request $request)
     {
         try {
-            $females = PersonalProfile::where("sex", 'Female')->where('archive', 0)->get();
+            $females = PersonalProfile::where('archive', 0)
+                ->where("sex", 'Female')
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('pregnancy_form_profiles')
+                        ->whereColumn('pregnancy_form_profiles.personal_profile_id', 'personal_profiles.id');
+                })
+                ->orderBy('lastname', 'asc')
+                ->get();
             return response()->json(['message' => 'Successful', 'status' => 'success', 'females' => $females], 201);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
@@ -25,6 +34,7 @@ class PersonalProfileController extends Controller
                 'lastname' => $request->lastname,
                 'firstname' => $request->firstname,
                 'middlename' => $request->middlename,
+                'suffix' => $request->suffix,
                 'birthdate' => $request->birthdate,
                 'sex' => $request->sex,
                 'civil_status' => $request->civil_status,
@@ -87,6 +97,18 @@ class PersonalProfileController extends Controller
             return response()->json(['data' => $profile]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
+
+    public function archivePersonalProfile(Request $request)
+    {
+        try {
+            PersonalProfile::where('id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
 }

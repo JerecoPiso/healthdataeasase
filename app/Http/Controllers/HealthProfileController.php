@@ -31,4 +31,15 @@ class HealthProfileController extends Controller
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
+    public function archiveHealthProfile(Request $request)
+    {
+        try {
+            HealthProfile::where('id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
 }

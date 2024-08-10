@@ -19,6 +19,10 @@
                         <InputText class="w-full" v-model="profileInfo.middlename" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
+                        <label for="">Suffix</label>
+                        <InputText class="w-full" v-model="profileInfo.suffix" />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
                         <label for="">Birthdate</label>
                         <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" />
                     </div>
@@ -40,19 +44,17 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Educational Attainment</label>
                         <Select v-model="profileInfo.educational_attainment" optionValue="name"
-                            :options="educational_attainment" editable optionLabel="name" 
-                            class="w-full " />
+                            :options="educational_attainment" editable optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Work</label>
                         <Select v-model="profileInfo.work" optionValue="name" :options="work" editable
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Relationship to Family Head</label>
                         <Select v-model="profileInfo.relation_ship_to_head" optionValue="name"
-                            :options="relationship_to_head" editable optionLabel="name" 
-                            class="w-full " />
+                            :options="relationship_to_head" editable optionLabel="name" class="w-full " />
                     </div>
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" />
@@ -75,7 +77,7 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Maintenance</label>
                         <Select v-model="healthInfo.maintenance" optionValue="name" :options="maintenance"
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Height(cm)</label>
@@ -88,7 +90,7 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
                         <Select v-model="healthInfo.health_status" optionValue="name" :options="health_status"
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" />
@@ -110,14 +112,15 @@
             <Column field="work" sortable header="Work"></Column>
             <Column header="Action" class="min-w-48">
                 <template #body="slotProps">
-                    <button type="button" @click="setForUpdatePersonalProfile(slotProps.data), editPersonalProfileModal = true"
+                    <button type="button"
+                        @click="setForUpdatePersonalProfile(slotProps.data), editPersonalProfileModal = true"
                         class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Set as household head'"><v-icon name="fa-house-user"></v-icon></button>
                     <button type="button" @click="setForUpdateHealthProfile(slotProps.data), editHealthModal = true"
                         class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'View health information'"><v-icon
                             name="md-healthandsafety-sharp"></v-icon></button>
-                    <button type="button" @click="confirmArchive()"
+                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
                         class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
                             name="bi-trash"></v-icon></button>
                 </template>
@@ -213,6 +216,7 @@ const profileInfo = ref({
     lastname: '',
     firstname: '',
     middlename: '',
+    suffix: '',
     birthdate: '',
     sex: '',
     civil_status: '',
@@ -221,7 +225,7 @@ const profileInfo = ref({
     relation_ship_to_head: '',
     phone_number: ''
 })
-
+const id = ref(0)
 const profiles = ref([])
 const toast = useToast();
 onMounted(async () => {
@@ -241,8 +245,14 @@ function confirmArchive() {
         acceptProps: {
             label: 'Save'
         },
-        accept: () => {
-            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+        accept: async () => {
+            await window.axios.delete(`${window.baseurl}api/personalprofile/archivePersonalProfile/${id.value}`, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            await getPersonalProfile()
+            toast.add({ severity: 'info', summary: 'Archived successfully', detail: 'You have accepted', life: 3000 });
         },
         reject: () => {
             toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
@@ -297,12 +307,12 @@ async function getPersonalProfile() {
         console.error(err)
     })
 }
-function setForUpdatePersonalProfile(profile){
+function setForUpdatePersonalProfile(profile) {
     for (const key in profileInfo.value) {
         profileInfo.value[key] = profile[key]
     }
 }
-function setForUpdateHealthProfile(profile){
+function setForUpdateHealthProfile(profile) {
     for (const key in healthInfo.value) {
         healthInfo.value[key] = profile[key]
     }

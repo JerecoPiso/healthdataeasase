@@ -48,8 +48,8 @@ import StyleClass from 'primevue/styleclass';
 import Tooltip from 'primevue/tooltip';
 import InputNumber from 'primevue/inputnumber';
 
-import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoColorPalette, FaUsersCog, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine } from "oh-vue-icons/icons";
-addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoColorPalette, FaUsersCog, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
+import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine } from "oh-vue-icons/icons";
+addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
 const app = createApp(App);
 app.component('DataTable', DataTable);
 app.component('ConfirmDialog', ConfirmDialog)

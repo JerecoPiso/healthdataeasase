@@ -14,6 +14,7 @@ class PersonalProfile extends Model
         'lastname',
         'firstname',
         'middlename',
+        'suffix',
         'birthdate',
         'sex',
         'civil_status',
