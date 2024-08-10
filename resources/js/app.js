@@ -43,18 +43,21 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputMask from 'primevue/inputmask';
 import Paginator from 'primevue/paginator';
-
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 import SelectButton from 'primevue/selectbutton';
 import Toast from 'primevue/toast';
 import StyleClass from 'primevue/styleclass';
 import Tooltip from 'primevue/tooltip';
 import InputNumber from 'primevue/inputnumber';
 
-import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine } from "oh-vue-icons/icons";
-addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
+import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp,  RiDashboardLine } from "oh-vue-icons/icons";
+addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
 const app = createApp(App);
 app.component('DataTable', DataTable);
 app.component('ConfirmDialog', ConfirmDialog)
+app.component('IconField', IconField)
+app.component('InputIcon', InputIcon)
 app.component('Column', Column);
 app.component('InputText', InputText);
 app.component('Button', Button);

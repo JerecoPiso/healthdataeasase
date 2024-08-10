@@ -31,18 +31,35 @@ class PersonalProfile extends Model
     }
     public function scopePersonalProfileWithHealthProfile($query, $request)
     {
-        return $query->leftJoin('health_profiles AS hp', 'personal_profiles.id', '=', 'hp.personal_profile_id')->where('personal_profiles.archive', 0)
+        // return $query->leftJoin('health_profiles AS hp', 'personal_profiles.id', '=', 'hp.personal_profile_id')->where('personal_profiles.archive', 0)
+        //     ->where(function ($query) use ($request) {
+        //         $query->where('personal_profiles.firstname', 'LIKE', '%' . $request->search . '%')
+        //             ->orWhere('personal_profiles.lastname', 'LIKE', '%' . $request->search . '%')
+        //             ->orWhere('personal_profiles.middlename', 'LIKE', '%' . $request->search . '%');
+        //     })
+        //     ->orderBy('personal_profiles.id', 'desc')
+        //     ->get([
+        //         'personal_profiles.*', 'hp.id as health_id', 'hp.philhealth_number', 'hp.blood_type',
+        //         'hp.maintenance', 'hp.height', 'hp.weight', 'hp.bmi', 'hp.health_status'
+        //     ]);
+        $profiles = $query->leftJoin('health_profiles AS hp', 'personal_profiles.id', '=', 'hp.personal_profile_id')->where('personal_profiles.archive', 0)
             ->where(function ($query) use ($request) {
                 $query->where('personal_profiles.firstname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('personal_profiles.lastname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('personal_profiles.middlename', 'LIKE', '%' . $request->search . '%');
                   
-            })
-            ->orderBy('personal_profiles.id', 'desc')
-            ->get([
+            });
+        $totalProfiles = $profiles->count();
+            $profilesPage = $profiles->orderBy('personal_profiles.id', 'desc')
+            ->skip((intval($request->page) - 1) * ($totalProfiles > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
+            ->take(intval($request->recordPerPage))
+             ->get([
                 'personal_profiles.*', 'hp.id as health_id', 'hp.philhealth_number', 'hp.blood_type',
                 'hp.maintenance', 'hp.height', 'hp.weight', 'hp.bmi', 'hp.health_status'
             ]);
+        return [
+            'count' => $totalProfiles,
+            'profilesPage' => $profilesPage
+        ];
     }
-    
 }

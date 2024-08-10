@@ -3,7 +3,7 @@
         <Toast />
         <ConfirmDialog></ConfirmDialog>
       
-        <DataTable :value="pregnancies"  :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+        <DataTable :value="pregnancies" 
             tableStyle="min-width: 50rem">
             <template #header>
                 <div class="flex justify-between">
@@ -12,12 +12,10 @@
                             scale="1.2"></v-icon></Button>
                     </div>
                     <div class="flex  ">
-                        <span class="relative">
-                            <InputText placeholder="Keyword Search" v-model="search" @keyup="getPregnancies()"
-                                class="pl-10 py-2 font-normal border border-slate-200 pr-10 w-full" />
-                            <v-icon class="pi pi-search absolute top-2/4 -mt-[0.5em] left-2 text-slate-400" scale="1.1"
-                                name="fa-search"></v-icon>
-                        </span>
+                        <IconField>
+                            <InputIcon class="pi pi-search" />
+                            <InputText  placeholder="Search" v-model="search" @keyup="getPregnancies()"/>
+                        </IconField>
                     </div>
                 </div>
             </template>
@@ -166,7 +164,7 @@ async function getPregnancies() {
     let data = null;
     if (paginator.value === null) {
         data = {
-            page: 0 + 1,
+            page: 1,
             recordPerPage: 10,
             search: search.value
         }

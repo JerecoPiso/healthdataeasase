@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class PregnancyFormProfileController extends Controller
 {
-  
+
     public function getPregnancies(Request $request)
     {
         try {
@@ -19,10 +19,13 @@ class PregnancyFormProfileController extends Controller
                         ->orWhere('profile.middlename', 'LIKE', '%' . $request->search . '%')
                         ->orWhere('pregnancy_form_profiles.family_planning', 'LIKE', '%' . $request->search . '%')
                         ->orWhere('pregnancy_form_profiles.type_of_delivery', 'LIKE', '%' . $request->search . '%');
-                })
-                ->orderBy('profile.lastname', 'asc')
-                ->get(['pregnancy_form_profiles.*', 'profile.lastname', 'profile.firstname', 'profile.middlename']);
-            return response()->json(['message' => 'Successful', 'status' => 'success', 'pregnancies' => $pregnancies, 'count' => $pregnancies->count()], 201);
+                });
+            $totalPregnancies = $pregnancies->count();
+            $pregnanciesPage = $pregnancies->orderBy('profile.lastname', 'asc')
+                ->skip((intval($request->page) - 1) * ($totalPregnancies > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
+                ->take(intval($request->recordPerPage))
+                ->get();
+            return response()->json(['message' => 'Successful', 'status' => 'success', 'pregnancies' => $pregnanciesPage, 'count' => $totalPregnancies], 201);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }

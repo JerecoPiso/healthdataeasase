@@ -92,9 +92,8 @@ class PersonalProfileController extends Controller
     public function getPersonalProfile(Request $request)
     {
         try {
-            // leftJoin('health_profiles', 'personal_profiles.id')->where('archive', 0)->orderBy('id', 'desc')->get()
             $profile = PersonalProfile::PersonalProfileWithHealthProfile($request);
-            return response()->json(['data' => $profile, 'count' => $profile->count()]);
+            return response()->json(['data' => $profile['profilesPage'], 'count' => $profile['count']]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }

@@ -63,6 +63,7 @@ class HouseholdProfileController extends Controller
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
+    // householdnumber unique generator
     public function getHouseHoldNumber(Request $request)
     {
         $householdNumber = "";
@@ -79,10 +80,21 @@ class HouseholdProfileController extends Controller
             $households = HouseholdProfile::with(['personalProfiles' => function ($query) {
                         $query->where('archive', 0);
                 }])
-                ->where('household_profiles.archive', 0)
-                ->orderBy('household_profiles.id', 'desc')
+                ->where(function ($query) use ($request) {
+                    $query->where('household_profiles.household_number', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('household_profiles.household_head', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('household_profiles.nhts', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('household_profiles.electricity', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('household_profiles.water_supply', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('household_profiles.toilet', 'LIKE', '%' . $request->search . '%');
+                })
+                ->where('household_profiles.archive', 0);
+            $totalHousehold = $households->count();
+            $householdPage = $households->orderBy('household_profiles.id', 'desc')
+                ->skip((intval($request->page) - 1) * ($totalHousehold > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
+                ->take(intval($request->recordPerPage))
                 ->get();
-            return response()->json(['data' => $households]);
+            return response()->json(['data' => $householdPage, 'count' => $totalHousehold]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }

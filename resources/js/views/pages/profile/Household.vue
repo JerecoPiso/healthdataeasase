@@ -2,9 +2,6 @@
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
-        <Button label="Show" class="w-[4em]"
-            @click="getHouseHoldNumber(), addModalVisible = true, personalInfoOnly = false"><v-icon
-                name="bi-house-door-fill" scale="1.2"></v-icon></Button>
         <Dialog v-model:visible="addModalVisible" maximizable modal
             :header="`${!personalInfoOnly ? 'HOUSEHOLD INFORMATION' : 'PERSONAL INFORMATION'}`" position="top"
             class="md:w-4/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
@@ -18,17 +15,17 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">NHTS (National Household Targeting System)</label>
                         <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Electricity</label>
                         <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Water Supply</label>
                         <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Toilet</label>
@@ -61,7 +58,7 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Sex</label>
                         <Select v-model="profileInfo.sex" optionValue="name" :options="sex" optionLabel="name"
-                             class="w-full " />
+                            class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Civil Status</label>
@@ -76,19 +73,17 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Educational Attainment</label>
                         <Select v-model="profileInfo.educational_attainment" optionValue="name"
-                            :options="educational_attainment" editable optionLabel="name" 
-                            class="w-full " />
+                            :options="educational_attainment" editable optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Work</label>
                         <Select v-model="profileInfo.work" optionValue="name" :options="work" editable
-                            optionLabel="name"  class="w-full " />
+                            optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Relationship to Family Head</label>
                         <Select v-model="profileInfo.relation_ship_to_head" optionValue="name"
-                            :options="relationship_to_head" editable optionLabel="name" 
-                            class="w-full " />
+                            :options="relationship_to_head" editable optionLabel="name" class="w-full " />
                     </div>
                 </div>
                 <p class="text-base uppercase font-bold mt-3">Health Status</p>
@@ -100,8 +95,8 @@
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Blood Type</label>
                         <Select v-model="healthInfo.blood_type" editable optionValue="name" :options="blood_type"
-                            optionLabel="name"  class="w-full " />
-                    </div>  
+                            optionLabel="name" class="w-full " />
+                    </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Maintenance</label>
                         <Select v-model="healthInfo.maintenance" editable optionValue="name" :options="maintenance"
@@ -126,22 +121,31 @@
             </form>
 
         </Dialog>
-        <DataTable v-model:expandedRows="expandedRows" :value="households" dataKey="id" paginator :rows="5"
+        <DataTable v-model:expandedRows="expandedRows" :value="households" dataKey="id"  :rows="5"
             :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
             <template #header>
-                <div class="flex flex-wrap justify-end gap-2">
-                    <Button text icon="pi pi-plus" label="Expand All Household Members" @click="expandAll" />
-                    <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
+                <div class="flex justify-between">
+                    <div>
+                        <Button label="Show" class="w-[4em]"
+                            @click="getHouseHoldNumber(), addModalVisible = true, personalInfoOnly = false"><v-icon
+                                name="bi-house-door-fill" scale="1.2"></v-icon></Button>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-2">
+                        <Button text icon="pi pi-plus" label="Expand All Household Members" @click="expandAll" />
+                        <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
+                        <div class="flex  ">
+                            <IconField>
+                            <InputIcon class="pi pi-search" />
+                            <InputText  placeholder="Search" v-model="search" @keyup="getPersonalProfile()"/>
+                        </IconField>
+                    </div>
+                    </div>
                 </div>
             </template>
             <Column expander style="width: 5rem" />
             <Column field="household_number" header="Household No."></Column>
-            <Column header="Household Head">
-                <template #body="slotProps">
-                    {{ slotProps.data.id }}
-                    {{ `${slotProps.data.lastname || ''} ${slotProps.data.firstname || ''} ${slotProps.data.middlename
-        || ''}` }}
-                </template>
+            <Column field="household_head" header="Household Head">
+                
             </Column>
             <Column field="nhts" header="NHTS"></Column>
             <Column field="electricity" header="Electricity"></Column>
@@ -153,7 +157,8 @@
                         v-tooltip.top="'Add house member'"
                         @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true"><v-icon
                             name="bi-person-circle"></v-icon></button>
-                    <button type="button" @click="id = slotProps.data.id, confirmArchive()" class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
+                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
+                        class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Archive household member'"><v-icon name="bi-trash"></v-icon></button>
                     <!-- <Button v-tooltip.left="'Add house member'" @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true" severity="info" ><v-icon name="bi-person-circle"></v-icon></Button> -->
                 </template>
@@ -171,6 +176,10 @@
                     </DataTable>
                 </div>
             </template>
+            <template #footer>
+                <Paginator v-on:page="getHousehold()" ref="paginator" :rows="10" :totalRecords="totalRecords"
+                    :rowsPerPageOptions="[10, 25, 50, 100]"></Paginator>
+            </template>
         </DataTable>
     </div>
 </template>
@@ -181,7 +190,9 @@ import { useRouter } from 'vue-router'
 import { useToast } from "primevue/usetoast";
 import { blood_type, civil_status, educational_attainment, electricity, health_status, maintenance, nhts, relationship_to_head, sex, toilet, water_supply, work } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
+const addModalVisible = ref(false)
 const confirm = useConfirm()
+const expandedRows = ref({});
 const isLoading = ref(true)
 const id = ref(0)
 const healthInfo = ref({
@@ -193,6 +204,7 @@ const healthInfo = ref({
     bmi: '',
     health_status: ''
 })
+const households = ref([])
 const householdInfo = ref({
     household_number: '',
     nhts: '',
@@ -200,6 +212,7 @@ const householdInfo = ref({
     water_supply: '',
     toilet: ''
 })
+const paginator = ref(null)
 const profileInfo = ref({
     household_profile_id: '',
     lastname: '345345',
@@ -214,19 +227,15 @@ const profileInfo = ref({
     relation_ship_to_head: 'Son',
     phone_number: '09656585982',
 })
-// 
 const personalInfoOnly = ref(true)
-
-const households = ref([])
-const expandedRows = ref({});
 const router = useRouter()
+const search = ref('')
+const totalRecords = ref(0)
 const toast = useToast();
-const addModalVisible = ref(false)
 onMounted(async () => {
     await getHousehold()
     isLoading.value = false
 })
-
 const expandAll = () => {
     expandedRows.value = households.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
 };
@@ -250,7 +259,7 @@ async function insertHouseholdProfile() {
         addModalVisible.value = false
         clearVariables()
         await getHousehold()
-        toast.add({  severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
     } catch (err) {
         console.log(err)
     }
@@ -271,24 +280,40 @@ async function insertPersonalProfile() {
         })
         addModalVisible.value = false
         clearVariables()
-        toast.add({  severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
         router.push({ name: 'personal' })
     } catch (err) {
         console.log(err)
     }
 }
 async function getHousehold() {
-    await window.axios.post(`${window.baseurl}api/household/getHousehold`, {}, {
+    let data = null;
+    if (paginator.value === null) {
+        data = {
+            page: 1,
+            recordPerPage: 10,
+            search: search.value
+        }
+    } else {
+        data = {
+            page: paginator.value.page + 1,
+            recordPerPage: paginator.value.d_rows,
+            search: search.value
+        }
+    }
+    await window.axios.post(`${window.baseurl}api/household/getHousehold`, data, {
         headers: {
             'Authorization': `Bearer ${VueCookies.get('token')}`
         }
     }).then(response => {
         console.log(response.data)
         households.value = response.data.data
+        totalRecords.value = response.data.count
     }).catch(err => {
         console.error(err)
     })
 }
+// household number generator
 async function getHouseHoldNumber() {
     await window.axios.post(`${window.baseurl}api/household/getHouseHoldNumber`, {}, {
         headers: {
@@ -298,7 +323,6 @@ async function getHouseHoldNumber() {
         if (response.statusText === "OK") {
             householdInfo.value.household_number = response.data.householdNumber;
         }
-
     }).catch(err => {
         console.error(err)
     })
@@ -329,11 +353,9 @@ function confirmArchive() {
             toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
         }
     });
-
 }
 function clearVariables() {
     for (const key in profileInfo.value) {
-
         profileInfo.value[key] = ''
     }
     for (const key in householdInfo.value) {
@@ -345,7 +367,6 @@ function clearVariables() {
         } else {
             healthInfo.value[key] = 0
         }
-
     }
 }
 </script>
