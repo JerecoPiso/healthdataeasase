@@ -1,10 +1,10 @@
 <template>
     <div class="card flex flex-col gap-4" v-if="!isLoading">
-
+        <Toast />
+        <ConfirmDialog></ConfirmDialog>
         <Button label="Show" class="w-[4em]"
             @click="getHouseHoldNumber(), addModalVisible = true, personalInfoOnly = false"><v-icon
                 name="bi-house-door-fill" scale="1.2"></v-icon></Button>
-
         <Dialog v-model:visible="addModalVisible" maximizable modal
             :header="`${!personalInfoOnly ? 'HOUSEHOLD INFORMATION' : 'PERSONAL INFORMATION'}`" position="top"
             class="md:w-4/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
@@ -99,12 +99,12 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Blood Type</label>
-                        <Select v-model="healthInfo.blood_type" optionValue="name" :options="blood_type"
+                        <Select v-model="healthInfo.blood_type" editable optionValue="name" :options="blood_type"
                             optionLabel="name"  class="w-full " />
                     </div>  
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Maintenance</label>
-                        <Select v-model="healthInfo.maintenance" optionValue="name" :options="maintenance"
+                        <Select v-model="healthInfo.maintenance" editable optionValue="name" :options="maintenance"
                             optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
@@ -117,7 +117,7 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
-                        <Select v-model="healthInfo.health_status" optionValue="name" :options="health_status"
+                        <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
                             optionLabel="name" class="w-full " />
                     </div>
 
@@ -154,7 +154,7 @@
                         v-tooltip.top="'Add house member'"
                         @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true"><v-icon
                             name="bi-person-circle"></v-icon></button>
-                    <button type="button" class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
+                    <button type="button" @click="id = slotProps.data.id, confirmArchive()" class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Archive household member'"><v-icon name="bi-trash"></v-icon></button>
                     <!-- <Button v-tooltip.left="'Add house member'" @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true" severity="info" ><v-icon name="bi-person-circle"></v-icon></Button> -->
                 </template>
@@ -177,11 +177,14 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useConfirm } from "primevue/useconfirm";
 import { useRouter } from 'vue-router'
 import { useToast } from "primevue/usetoast";
 import { blood_type, civil_status, educational_attainment, electricity, health_status, maintenance, nhts, relationship_to_head, sex, toilet, water_supply, work } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
+const confirm = useConfirm()
 const isLoading = ref(true)
+const id = ref(0)
 const healthInfo = ref({
     philhealth_number: '',
     blood_type: '',
@@ -253,7 +256,7 @@ async function insertHouseholdProfile() {
         addModalVisible.value = false
         clearVariables()
         await getHousehold()
-        toast.add({ severity: 'info', summary: 'Info', detail: 'Saved successfully', life: 3000 });
+        toast.add({  severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
     } catch (err) {
         console.log(err)
     }
@@ -274,7 +277,7 @@ async function insertPersonalProfile() {
         })
         addModalVisible.value = false
         clearVariables()
-        toast.add({ severity: 'info', summary: 'Info', detail: 'Saved successfully', life: 3000 });
+        toast.add({  severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
         router.push({ name: 'personal' })
     } catch (err) {
         console.log(err)
@@ -305,6 +308,34 @@ async function getHouseHoldNumber() {
     }).catch(err => {
         console.error(err)
     })
+}
+function confirmArchive() {
+    confirm.require({
+        message: 'Are you sure you want to archive?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Save'
+        },
+        accept: async () => {
+            await window.axios.delete(`${window.baseurl}api/household/archiveHouseholdProfile/${id.value}`, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            await getHousehold()
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Archive successfully', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+
 }
 function clearVariables() {
     for (const key in profileInfo.value) {

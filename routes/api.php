@@ -27,19 +27,19 @@ Route::prefix('household')->middleware('auth:sanctum')->controller(HouseholdProf
     Route::post('getHousehold', 'getHousehold');
     Route::post('getHouseHoldNumber', 'getHouseHoldNumber');
 
-    Route::post('archiveHouseholdProfile', 'archiveHouseholdProfile');
+    Route::delete('archiveHouseholdProfile/{id}', 'archiveHouseholdProfile');
 });
 Route::prefix('healthprofile')->middleware('auth:sanctum')->controller(HealthProfileController::class)->group(function () {
     Route::post('updateHealthProfile', 'updateHealthProfile');
     
-    Route::post('archiveHealthProfile', 'archiveHealthProfile');
+    Route::delete('archiveHealthProfile/{id}', 'archiveHealthProfile');
 });
 Route::prefix('pregnancy')->middleware('auth:sanctum')->controller(PregnancyFormProfileController::class)->group(function () {
     Route::post('getPregnancies', 'getPregnancies');
     Route::post('insertPregnancy', 'insertPregnancy');
     Route::post('updatePregnancy', 'updatePregnancy');
 
-    Route::post('archivePregnancy', 'archivePregnancy');
+    Route::delete('archivePregnancy/{id}', 'archivePregnancy');
 });
 // Route::get('/user', function (Request $request) {
 //     return $request->user();

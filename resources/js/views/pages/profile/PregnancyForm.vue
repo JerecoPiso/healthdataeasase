@@ -1,6 +1,7 @@
 <template>
     <div class="card flex flex-col gap-4" v-if="!isLoading">
-
+        <Toast />
+        <ConfirmDialog></ConfirmDialog>
         <Button label="Show" class="w-[4em]" @click="updatePregnancyOrNot = false, addUpdateModalVisible = true"><v-icon name="co-user-female"
                 scale="1.2"></v-icon></Button>
         <DataTable :value="pregnancies" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -16,11 +17,12 @@
                 <Column field="gp" header="GP (Gravida/Para)"></Column>
                 <Column header="Action" class="min-w-48">
                 <template #body="slotProps">
+                    
                     <button type="button" @click="setForUpdatePregnancy(slotProps.data), updatePregnancyOrNot = true, addUpdateModalVisible = true"
                         class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update'"><v-icon name="fa-edit"></v-icon></button>
                   
-                    <button type="button" 
+                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
                         class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
                             name="bi-trash"></v-icon></button>
                 </template>
@@ -81,13 +83,16 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { calculateEDC } from '@/service/Calculations.js'
 import { family_planning, type_of_delivery } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const addUpdateModalVisible = ref(false)
+const confirm = useConfirm();
 const females = ref([])
 const isLoading = ref(true)
+const id = ref(0)
 const pregnancies = ref([])
 const pregnancyInfo = ref({
     id: '',
@@ -164,7 +169,7 @@ async function insertPregnancy() {
         })
         await getFemales()
         await getPregnancies()
-        toast.add({ severity: 'info', summary: 'Info', detail: 'Saved successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
         addUpdateModalVisible.value = false
     } catch (err) {
         console.log(err)
@@ -186,11 +191,39 @@ async function updatePregnancy() {
         })
         await getFemales()
         await getPregnancies()
-        toast.add({ severity: 'info', summary: 'Info', detail: 'Updated successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Updated successfully', life: 3000 });
         addUpdateModalVisible.value = false
     } catch (err) {
         console.log(err)
     }
+}
+function confirmArchive() {
+    confirm.require({
+        message: 'Are you sure you want to archive?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Save'
+        },
+        accept: async () => {
+            await window.axios.delete(`${window.baseurl}api/pregnancy/archivePregnancy/${id.value}`, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            await getPregnancies()
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Archive successfully', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+
 }
 function clearVariables() {
     for (const key in pregnancyInfo.value) {

@@ -71,12 +71,12 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Blood Type</label>
-                        <Select v-model="healthInfo.blood_type" optionValue="name" :options="blood_type"
+                        <Select v-model="healthInfo.blood_type" editable optionValue="name" :options="blood_type"
                             optionLabel="name" placeholder="Select blood type" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Maintenance</label>
-                        <Select v-model="healthInfo.maintenance" optionValue="name" :options="maintenance"
+                        <Select v-model="healthInfo.maintenance" editable optionValue="name" :options="maintenance"
                             optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
@@ -89,7 +89,7 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
-                        <Select v-model="healthInfo.health_status" optionValue="name" :options="health_status"
+                        <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
                             optionLabel="name" class="w-full " />
                     </div>
                 </div>
@@ -126,68 +126,6 @@
                 </template>
             </Column>
         </DataTable>
-        <!-- 
-        <Dialog v-model:visible="editHealthModal" maximizable modal header="Profile" position="top"
-            class="md:w-4/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <form @submit.prevent="insertPersonalProfile()">
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Lastname</label>
-                        <InputText class="w-full" v-model="profileInfo.lastname" required />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Firstname</label>
-                        <InputText class="w-full" v-model="profileInfo.firstname" required />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Middlename</label>
-                        <InputText class="w-full" v-model="profileInfo.middlename" />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Birthdate</label>
-                        <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" required />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Sex</label>
-                        <Select v-model="profileInfo.sex" optionValue="name" :options="sex" optionLabel="name"
-                            placeholder="Select a City" class="w-full " required />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Civil Status</label>
-                        <Select v-model="profileInfo.civil_status" optionValue="name" :options="civil_status"
-                            optionLabel="name" placeholder="Select a City" class="w-full " required />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Phone Number</label>
-                        <InputMask v-model="profileInfo.phone_number" mask="99999999999" placeholder="99999999999"
-                            class="w-full" />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Educational Attainment</label>
-                        <Select v-model="profileInfo.educational_attainment" optionValue="name"
-                            :options="educational_attainment" editable optionLabel="name" placeholder="Select a City"
-                            class="w-full " />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Work</label>
-                        <Select v-model="profileInfo.work" optionValue="name" :options="work" editable
-                            optionLabel="name" placeholder="Select a City" class="w-full " />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Family Head</label>
-                        <Select v-model="profileInfo.family_head_id" :options="family_head" optionValue="id" editable
-                            optionLabel="name" placeholder="Select a City" class="w-full " />
-                    </div>
-                    <div class="md:col-span-1 col-span-3">
-                        <label for="">Relationship to Family Head</label>
-                        <Select v-model="profileInfo.relation_ship_to_head" optionValue="name"
-                            :options="relationship_to_head" editable optionLabel="name" placeholder="Select a City"
-                            class="w-full " />
-                    </div>
-                </div>
-                <Button label="Submit" type="submit" class="w-full mt-2" />
-            </form>
-        </Dialog> -->
     </div>
 </template>
 <script setup>
@@ -252,7 +190,7 @@ function confirmArchive() {
                 }
             })
             await getPersonalProfile()
-            toast.add({ severity: 'info', summary: 'Archived successfully', detail: 'You have accepted', life: 3000 });
+            toast.add({  severity: 'success', summary: 'Success', detail: 'Archived successfully', life: 3000 });
         },
         reject: () => {
             toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
@@ -276,7 +214,7 @@ async function updatePersonalProfile() {
         })
         editPersonalProfileModal.value = false
         await getPersonalProfile()
-        toast.add({ severity: 'info', summary: 'Info', detail: 'Updated successfully', life: 3000 });
+        toast.add({  severity: 'success', summary: 'Success', detail: 'Updated successfully', life: 3000 });
     } catch (err) {
         console.log(err)
     }

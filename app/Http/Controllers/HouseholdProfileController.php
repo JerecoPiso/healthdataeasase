@@ -79,6 +79,7 @@ class HouseholdProfileController extends Controller
             $households = HouseholdProfile::with(['personalProfiles' => function ($query) {
                         $query->where('archive', 0);
                 }])
+                ->where('household_profiles.archive', 0)
                 ->orderBy('household_profiles.id', 'desc')
                 ->get();
             return response()->json(['data' => $households]);
