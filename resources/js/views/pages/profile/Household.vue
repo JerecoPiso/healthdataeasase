@@ -2,6 +2,34 @@
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
+        <Dialog v-model:visible="updateHouseholdModalVisible" maximizable modal header="Update Household Information">
+            <div class="grid grid-cols-3 gap-2">
+                <div class="md:col-span-1 col-span-3">
+                    <label for="">Household Number</label>
+                    <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" />
+                </div>
+                <div class="md:col-span-1 col-span-3">
+                    <label for="">NHTS (National Household Targeting System)</label>
+                    <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable optionLabel="name"
+                        class="w-full " />
+                </div>
+                <div class="md:col-span-1 col-span-3">
+                    <label for="">Electricity</label>
+                    <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
+                        optionLabel="name" class="w-full " />
+                </div>
+                <div class="md:col-span-1 col-span-3">
+                    <label for="">Water Supply</label>
+                    <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
+                        optionLabel="name" class="w-full " />
+                </div>
+                <div class="md:col-span-1 col-span-3">
+                    <label for="">Toilet</label>
+                    <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable
+                        optionLabel="name" class="w-full " />
+                </div>
+            </div>
+        </Dialog>
         <Dialog v-model:visible="addModalVisible" maximizable modal
             :header="`${!personalInfoOnly ? 'HOUSEHOLD INFORMATION' : 'PERSONAL INFORMATION'}`" position="top"
             class="md:w-4/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
@@ -155,7 +183,8 @@
                         v-tooltip.top="'Add house member'"
                         @click="profileInfo.household_profile_id = slotProps.data.id, addModalVisible = true, personalInfoOnly = true"><v-icon
                             name="bi-person-circle"></v-icon></button>
-                    <button type="button" class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
+                    <button type="button" @click="setForUpdateHousehold(slotProps.data), updateHouseholdModalVisible = true"
+                        class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update household information'"><v-icon name="fa-edit"></v-icon></button>
                     <button type="button" @click="id = slotProps.data.id, confirmArchive()"
                         class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
@@ -232,6 +261,7 @@ const router = useRouter()
 const search = ref('')
 const totalRecords = ref(0)
 const toast = useToast();
+const updateHouseholdModalVisible = ref(false)
 onMounted(async () => {
     await getHousehold()
     isLoading.value = false
@@ -367,6 +397,12 @@ function clearVariables() {
         } else {
             healthInfo.value[key] = 0
         }
+    }
+}
+function setForUpdateHousehold(_householdInfo) {
+    console.log(_householdInfo)
+    for (const key in householdInfo.value) {
+        householdInfo.value[key] = _householdInfo[key]
     }
 }
 </script>

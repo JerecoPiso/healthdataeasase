@@ -75,7 +75,7 @@ app.directive('tooltip', Tooltip);
 app.directive('styleclass', StyleClass);
 app.use(router);
 app.use(VueCookies, {
-    expires: '1h',
+    expires: '4h',
     path: '/',
     domain: '',
     secure: false,
