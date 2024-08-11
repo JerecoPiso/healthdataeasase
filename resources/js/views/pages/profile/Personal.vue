@@ -1,5 +1,5 @@
 <template>
-      <Spinner v-if="isLoading" />
+    <Spinner v-if="isLoading" />
 
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
@@ -63,43 +63,44 @@
             </form>
 
         </Dialog>
-        <Dialog v-model:visible="editHealthModal" maximizable modal header="Edit Health Status" position="top"
+        <Dialog v-model:visible="editHealthModal" maximizable modal :header="`${!viewHealthInfoOnly ? 'Edit Health Status' : 'View Health Status'}`" position="top"
             class="md:w-3/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="updateHealthProfile()">
                 <div class="grid grid-cols-3 gap-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Philhealth Number</label>
-                        <InputText class="w-full" v-model="healthInfo.philhealth_number" />
+                        <InputText class="w-full" v-model="healthInfo.philhealth_number" :disabled="viewHealthInfoOnly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Blood Type</label>
                         <Select v-model="healthInfo.blood_type" editable optionValue="name" :options="blood_type"
-                            optionLabel="name" placeholder="Select blood type" class="w-full " />
+                            optionLabel="name" placeholder="Select blood type" class="w-full " :disabled="viewHealthInfoOnly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Maintenance</label>
                         <Select v-model="healthInfo.maintenance" editable optionValue="name" :options="maintenance"
-                            optionLabel="name" class="w-full " />
+                            optionLabel="name" class="w-full " :disabled="viewHealthInfoOnly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Height(cm)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.height" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.height" :disabled="viewHealthInfoOnly" inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Weight(kl)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.weight" :disabled="viewHealthInfoOnly" inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">BMI(Body Mass Index)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" :useGrouping="false" disabled />
+                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping"
+                            :useGrouping="false" disabled />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
                         <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
-                            optionLabel="name" class="w-full " />
+                            optionLabel="name" class="w-full " :disabled="viewHealthInfoOnly" />
                     </div>
                 </div>
-                <Button label="Submit" type="submit" class="w-full mt-2" />
+                <Button label="Submit" type="submit" class="w-full mt-2" v-if="!viewHealthInfoOnly" />
             </form>
 
         </Dialog>
@@ -112,7 +113,7 @@
                     <div class="flex  ">
                         <IconField>
                             <InputIcon class="pi pi-search" />
-                            <InputText  placeholder="Search" v-model="search" @keyup="getPersonalProfile()"/>
+                            <InputText placeholder="Search" v-model="search" @keyup="getPersonalProfile()" />
                         </IconField>
                     </div>
                 </div>
@@ -127,16 +128,20 @@
             <Column field="phone_number" header="Phone No."></Column>
             <Column field="educational_attainment" sortable header="Educational Attainment"></Column>
             <Column field="work" sortable header="Work"></Column>
-            <Column header="Action" class="min-w-48">
+            <Column header="Action" class="min-w-52">
                 <template #body="slotProps">
                     <button type="button"
                         @click="setForUpdatePersonalProfile(slotProps.data), editPersonalProfileModal = true"
                         class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
-                        v-tooltip.top="'Set as household head'"><v-icon name="fa-house-user"></v-icon></button>
-                    <button type="button" @click="setForUpdateHealthProfile(slotProps.data), editHealthModal = true"
+                        v-tooltip.top="'Update personal profile'"><v-icon name="fa-edit"></v-icon></button>
+                    <button type="button" @click="setForUpdateHealthProfile(slotProps.data), viewHealthInfoOnly = false, editHealthModal = true"
+                        class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
+                        v-tooltip.top="'Update health information'"><v-icon
+                            name="md-healthandsafety-sharp"></v-icon></button>
+                    <button type="button" @click="setForUpdateHealthProfile(slotProps.data), viewHealthInfoOnly = true, editHealthModal = true"
                         class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'View health information'"><v-icon
-                            name="md-healthandsafety-sharp"></v-icon></button>
+                            name="ri-health-book-line"></v-icon></button>
                     <button type="button" @click="id = slotProps.data.id, confirmArchive()"
                         class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
                             name="bi-trash"></v-icon></button>
@@ -190,6 +195,7 @@ const profiles = ref([])
 const search = ref('')
 const toast = useToast();
 const totalRecords = ref(1)
+const viewHealthInfoOnly = ref(false)
 watch(
     () => healthInfo.value.weight,
     () => {

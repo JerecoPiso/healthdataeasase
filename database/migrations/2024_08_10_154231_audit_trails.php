@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('reference_id')->nullable();
             $table->string('reference_table', length: 255)->nullable();
             $table->string('process', length: 45);
+            $table->string('status', length: 10);
             $table->string('message', length: 255)->nullable();
             $table->text('data')->nullable();
             $table->timestamps();

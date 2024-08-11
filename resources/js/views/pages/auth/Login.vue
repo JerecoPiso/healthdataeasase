@@ -38,7 +38,7 @@
 
                         <label
                             class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password v-model="user.password" placeholder="Password" required :toggleMask="true"
+                        <Password v-model="user.password" placeholder="Password" :feedback="false" required :toggleMask="true"
                             class="mb-4" fluid>
                         </Password>
 
@@ -83,7 +83,9 @@ async function login() {
         const response = await window.axios.post(`${window.baseurl}api/auth/login`, user.value)
         // console.log(response)
         if (response.statusText == "OK" && response.data.status == 'success') {
+            // console.log(response.data)
             VueCookies.set('token', response.data.token)
+            VueCookies.set('_role', response.data._role)
             VueCookies.set('authenticated', true)
             loggingIn.value = false
             router.push({ name: 'dashboard' })

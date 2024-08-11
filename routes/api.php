@@ -14,10 +14,18 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
+
+    Route::post('getUsers', 'getUsers')->middleware('auth:sanctum');
+    Route::post('updateUser', 'updateUser')->middleware('auth:sanctum');
+    Route::post('changePassword', 'changePassword')->middleware('auth:sanctum');
+    Route::delete('archiveUser/{id}', 'archiveUser');
+
+    
 });
 
 Route::prefix('dashboard')->middleware('auth:sanctum')->controller(DashboardController::class)->group(function () {
     Route::get('getCounts', 'getCounts');
+    Route::get('getCountsByAgeGroup', 'getCountsByAgeGroup');
 });
 Route::prefix('personalprofile')->middleware('auth:sanctum')->controller(PersonalProfileController::class)->group(function () {
     Route::post('insertPersonalProfile', 'insertPersonalProfile');

@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('lmp', length: 45);
             $table->string('edc', length: 45);
             $table->smallInteger('gp');
+            $table->string('status', length: 45)->nullable()->comment('eg. Active, Delivered, Abort, Others')->default('Active');
             $table->smallInteger('archive')->default('0');
-
             $table->timestamps();
         });
     }

@@ -50,12 +50,18 @@ import Toast from 'primevue/toast';
 import StyleClass from 'primevue/styleclass';
 import Tooltip from 'primevue/tooltip';
 import InputNumber from 'primevue/inputnumber';
-
-import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch,FaSpinner, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp,  RiDashboardLine } from "oh-vue-icons/icons";
-addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiPersonCircle, CoUserFemale, CoColorPalette,FaSearch,FaSpinner, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine);
+import Chart from 'primevue/chart';
+import Card from 'primevue/card';
+import Checkbox from 'primevue/checkbox';
+import { BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiShieldLock, BiPersonCircle, CoUserFemale, CoColorPalette, FaSearch, FaSpinner, FaUserPlus, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine, RiHealthBookLine } from "oh-vue-icons/icons";
+addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiShieldLock, BiPersonCircle, CoUserFemale, CoColorPalette, FaSearch, FaSpinner, FaUserPlus, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode, MdLightmode, MdHealthandsafetySharp, RiDashboardLine, RiHealthBookLine);
 const app = createApp(App);
+app.component('Chart', Chart);
+app.component('Card', Card);
+
 app.component('DataTable', DataTable);
 app.component('ConfirmDialog', ConfirmDialog)
+app.component('Checkbox', Checkbox)
 app.component('IconField', IconField)
 app.component('InputIcon', InputIcon)
 app.component('Column', Column);

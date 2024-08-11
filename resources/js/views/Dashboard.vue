@@ -1,5 +1,5 @@
 <template>
-
+    <Spinner v-if="isLoading" />
     <div class="grid grid-cols-12 gap-8" v-if="!isLoading">
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
@@ -68,16 +68,49 @@
             </div>
         </div>
     </div>
-    <div class="col-span-12 xl:col-span-6">
-        <Spinner v-if="isLoading" />
+    <div class="col-span-12 xl:col-span-6" v-if="!isLoading">
+        <div class="grid grid-cols-12 gap-4 mt-4">
+            <div class="md:col-span-8">
+                <div class="card mb-0">
+                    <Chart type="bar" :data="ageChart" :options="ageOptions" :plugins="plugins" />
+                </div>
+            </div>
+            <div class="md:col-span-4">
+                <div class="card mb-0">
+                    <label class="block text-muted-color font-medium mb-4">Gender</label>
+                    <Chart type="doughnut" :data="genderChart" :options="genderOptions" :plugins="plugins" />
+                </div>
+                <div class="card mb-0 mt-4">
+                    <label class="block text-muted-color font-medium mb-4">BMI Categories <span class="text-slate-500 text-sm">(18 yrs. old below)</span></label>
+                    <Chart type="doughnut" :data="bmiTeenChart" :options="bmiTeenChartOptions" :plugins="plugins" />
+                </div>
+                <div class="card mb-0 mt-4">
+                    <label class="block text-muted-color font-medium mb-4">BMI Categories <span class="text-slate-500 text-sm">(18 yrs. old above)</span></label>
+                    <Chart type="doughnut" :data="bmiAdultChart" :options="bmiAdultChartOptions" :plugins="plugins" />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
 import VueCookies from 'vue-cookies';
 
+import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { setBarChartData, setBarChartOptions, setDoughnutData, setDoughnutOptions } from '@/service/Charts.js'
 import { onMounted, ref, watch } from 'vue';
-const { getPrimary, getSurface, isDarkTheme } = useLayout();
+const ageChart = ref()
+const ageOptions = ref()
+const ageCounts = ref()
+const bmiTeenChart = ref()
+const bmiTeenChartOptions = ref()
+const bmiTeenCounts = ref()
+const bmiAdultChart = ref()
+const bmiAdultChartOptions = ref()
+const bmiAdultCounts = ref()
+const genderChart = ref()
+const genderOptions = ref()
+const genderCounts = ref()
+
 const counts = ref({
     users: 0,
     household: 0,
@@ -86,10 +119,41 @@ const counts = ref({
     pregnancy: 0
 })
 const isLoading = ref(true)
+const plugins = [ChartDataLabels]
 onMounted(async () => {
     await getCounts()
+    await getCountsByAgeGroup()
+    const bgColors = ['#00A9FF', '#68D2E8', '#FDDE55', '#FEEFAD']
+    ageChart.value = setBarChartData(['0-2 yrs. old', '3-18 yrs. old', '19-59 yrs. old', '60 yrs. old Above'], Object.entries(ageCounts.value).map(([key, value]) => value), bgColors)
+    ageOptions.value = setBarChartOptions()
+
+    genderChart.value = setDoughnutData(Object.entries(genderCounts.value).map((key, value) => key[0]), Object.entries(genderCounts.value).map((key, value) => key[1]), ['#00FFAB', '#92B4EC'])
+    genderOptions.value = setDoughnutOptions()
+
+    bmiTeenChart.value = setDoughnutData(Object.entries(bmiTeenCounts.value).map((key, value) => key[0]), Object.entries(bmiTeenCounts.value).map((key, value) => key[1]), ['#7286D3', '#8EA7E9', '#E5E0FF', '#FFF2F2'])
+    bmiTeenChartOptions.value = setDoughnutOptions()
+
+    bmiAdultChart.value = setDoughnutData(Object.entries(bmiAdultCounts.value).map((key, value) => key[0]), Object.entries(bmiAdultCounts.value).map((key, value) => key[1]), ['#7286D3', '#8EA7E9', '#E5E0FF', '#FFF2F2'])
+    bmiAdultChartOptions.value = setDoughnutOptions()
     isLoading.value = false
 });
+async function getCountsByAgeGroup() {
+    try {
+        const response = await window.axios.get(`${window.baseurl}api/dashboard/getCountsByAgeGroup`, {
+            headers: {
+                'Authorization': `Bearer ${VueCookies.get('token')}`
+            }
+        });
+        ageCounts.value = response.data.ages
+        genderCounts.value = response.data.genders
+        bmiTeenCounts.value = response.data.bmiTeenagers
+        bmiAdultCounts.value = response.data.bmiAdults
+        
+        console.log(response.data)
+    } catch (err) {
+        console.log(err.response)
+    }
+}
 async function getCounts() {
     try {
         const response = await window.axios.get(`${window.baseurl}api/dashboard/getCounts`, {
@@ -107,82 +171,4 @@ async function getCounts() {
         console.log(err)
     }
 }
-function setChartData() {
-    const documentStyle = getComputedStyle(document.documentElement);
-
-    return {
-        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-        datasets: [
-            {
-                type: 'bar',
-                label: 'Subscriptions',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-                data: [4000, 10000, 15000, 4000],
-                barThickness: 32
-            },
-            {
-                type: 'bar',
-                label: 'Advertising',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-                data: [2100, 8400, 2400, 7500],
-                barThickness: 32
-            },
-            {
-                type: 'bar',
-                label: 'Affiliate',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-                data: [4100, 5200, 3400, 7400],
-                borderRadius: {
-                    topLeft: 8,
-                    topRight: 8
-                },
-                borderSkipped: true,
-                barThickness: 32
-            }
-        ]
-    };
-}
-
-function setChartOptions() {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const borderColor = documentStyle.getPropertyValue('--surface-border');
-    const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
-
-    return {
-        maintainAspectRatio: false,
-        aspectRatio: 0.8,
-        scales: {
-            x: {
-                stacked: true,
-                ticks: {
-                    color: textMutedColor
-                },
-                grid: {
-                    color: 'transparent',
-                    borderColor: 'transparent'
-                }
-            },
-            y: {
-                stacked: true,
-                ticks: {
-                    color: textMutedColor
-                },
-                grid: {
-                    color: borderColor,
-                    borderColor: 'transparent',
-                    drawTicks: false
-                }
-            }
-        }
-    };
-}
-
-// const formatCurrency = (value) => {
-//     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-// };
-
-// watch([getPrimary, getSurface, isDarkTheme], () => {
-//     chartData.value = setChartData();
-//     chartOptions.value = setChartOptions();
-// });
 </script>

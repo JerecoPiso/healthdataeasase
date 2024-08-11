@@ -199,7 +199,7 @@ async function insertPregnancy() {
             const day = String(date.getDate()).padStart(2, '0');
             pregnancyInfo.value.lmp = `${year}-${month}-${day}`;
         }
-        const response = window.axios.post(`${window.baseurl}api/pregnancy/insertPregnancy`, pregnancyInfo.value, {
+        const response = await window.axios.post(`${window.baseurl}api/pregnancy/insertPregnancy`, pregnancyInfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
             }
@@ -221,7 +221,7 @@ async function updatePregnancy() {
             const day = String(date.getDate()).padStart(2, '0');
             pregnancyInfo.value.lmp = `${year}-${month}-${day}`;
         }
-        const response = window.axios.post(`${window.baseurl}api/pregnancy/updatePregnancy`, pregnancyInfo.value, {
+        const response = await window.axios.post(`${window.baseurl}api/pregnancy/updatePregnancy`, pregnancyInfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
             }

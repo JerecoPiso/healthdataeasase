@@ -9,7 +9,7 @@
                 <!-- <label for="">Household Number</label>
                 <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" /> -->
                 <label for="">NHTS (National Household Targeting System)</label>
-                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable optionLabel="name"
+                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts"  optionLabel="name"
                     class="w-full " />
                 <label for="">Electricity</label>
                 <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
@@ -35,18 +35,18 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">NHTS (National Household Targeting System)</label>
-                        <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" editable
+                        <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" 
                             optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Electricity</label>
                         <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
-                            optionLabel="name" class="w-full " />
+                            optionLabel="name" class="w-full " required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Water Supply</label>
                         <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
-                            optionLabel="name" class="w-full " />
+                            optionLabel="name" class="w-full " required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Toilet</label>
@@ -58,7 +58,7 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Lastname</label>
-                        <InputText class="w-full" v-model="profileInfo.lastname" />
+                        <InputText class="w-full" required v-model="profileInfo.lastname" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Firstname</label>

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignId('household_profile_id')->references('id')->on('household_profiles')->onDelete('restrict')->onUpdate('cascade');
             $table->string('relation_ship_to_head', length: 45);
             $table->string('phone_number', length: 14);
+            $table->string('status', length: 45)->nullable()->comment('eg. Active, Died, Move to another place, Others')->default('Active');
             $table->smallInteger('archive')->default('0');
             $table->timestamps();
         });

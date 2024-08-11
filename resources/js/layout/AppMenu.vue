@@ -1,8 +1,24 @@
+<template>
+    <ul class="layout-menu" v-if="!isLoading">
+        <template v-for="(item, i) in model" :key="item">
+            <app-menu-item v-if="!item.separator && ((_role === '0') || (_role == '1' && item.label != 'Admin'))" :item="item" :index="i"></app-menu-item>
+            <li v-if="item.separator" class="menu-separator"></li>
+        </template>
+    </ul>
+</template>
 <script setup>
-import { ref } from 'vue';
-
+import { onMounted, ref } from 'vue';
+import VueCookies from 'vue-cookies'
 import AppMenuItem from './AppMenuItem.vue';
-
+const _role = ref('0')
+const isLoading = ref(true)
+onMounted(() => {
+    if(VueCookies.get('_role')){
+        _role.value = VueCookies.get('_role')
+    }
+    // alert(typeof VueCookies.get('_role'))
+    isLoading.value = false
+})
 const model = ref([
     {
         label: 'Home',
@@ -26,11 +42,11 @@ const model = ref([
             //     icon: 'md-healthandsafety-sharp',
             //     to: '/healthdataeasase/public/profile/health'
             // },
-          
+
             {
                 label: 'Pregnancy Form',
                 icon: 'md-pregnantwoman',
-               to: '/healthdataeasase/public/profile/pregnancy'
+                to: '/healthdataeasase/public/profile/pregnancy'
             },
         ]
     },
@@ -47,14 +63,4 @@ const model = ref([
 
 ]);
 </script>
-
-<template>
-    <ul class="layout-menu">
-        <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
-        </template>
-    </ul>
-</template>
-
 <style lang="scss" scoped></style>
