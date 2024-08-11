@@ -1,7 +1,8 @@
 <template>
     <ul class="layout-menu" v-if="!isLoading">
         <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator && ((_role === '0') || (_role == '1' && item.label != 'Admin'))" :item="item" :index="i"></app-menu-item>
+            <app-menu-item v-if="!item.separator && ((_role === '0') || (_role == '1' && item.label != 'Admin'))"
+                :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
     </ul>
@@ -13,7 +14,7 @@ import AppMenuItem from './AppMenuItem.vue';
 const _role = ref('0')
 const isLoading = ref(true)
 onMounted(() => {
-    if(VueCookies.get('_role')){
+    if (VueCookies.get('_role')) {
         _role.value = VueCookies.get('_role')
     }
     // alert(typeof VueCookies.get('_role'))
@@ -33,23 +34,31 @@ const model = ref([
                 to: '/healthdataeasase/public/profile/household'
             },
             {
-                label: 'Personal',
+                label: 'Personal & Health',
                 icon: 'bi-person-circle',
                 to: '/healthdataeasase/public/profile/personal'
             },
-            // {
-            //     label: 'Health',
-            //     icon: 'md-healthandsafety-sharp',
-            //     to: '/healthdataeasase/public/profile/health'
-            // },
+
 
             {
-                label: 'Pregnancy Form',
+                label: 'Pregnancy',
                 icon: 'md-pregnantwoman',
                 to: '/healthdataeasase/public/profile/pregnancy'
             },
+
         ]
     },
+    {
+        label: 'Others',
+        items: [
+            {
+                label: 'Vaccination',
+                icon: 'md-vaccines',
+                to: '/healthdataeasase/public/health/vaccination'
+            },
+        ]
+    },
+
     {
         label: 'Admin',
         items: [

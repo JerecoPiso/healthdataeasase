@@ -1,60 +1,13 @@
 <template>
     <Spinner v-if="isLoading" />
-
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
-
-        <DataTable :value="pregnancies" tableStyle="min-width: 50rem">
-            <template #header>
-                <div class="flex justify-between">
-                    <div class="flex items-center justify-center gap-x-2">
-                        <Button label="Show" class="w-[4em]"
-                            @click="updatePregnancyOrNot = false, addUpdateModalVisible = true"><v-icon
-                                name="co-user-female" scale="1.2"></v-icon></Button>
-                    </div>
-                    <div class="flex  ">
-                        <IconField>
-                            <InputIcon class="pi pi-search" />
-                            <InputText placeholder="Search" v-model="search" @keyup="getPregnancies()" />
-                        </IconField>
-                    </div>
-                </div>
-            </template>
-            <Column field="lastname" header="Lastname"></Column>
-            <Column field="firstname" header="Firstname"></Column>
-            <Column field="middlename" header="Middlename"></Column>
-            <Column field="post_partum" header="Post-Partum"></Column>
-            <Column field="family_planning" header="Family Planning"></Column>
-            <Column field="type_of_delivery" header="Type of Delivery"></Column>
-            <Column field="lmp" header="LMP (Last Menstrual Period)"></Column>
-            <Column field="edc" header="EDC (Estimated Date of Confinement)"></Column>
-            <Column field="gp" header="GP (Gravida/Para)"></Column>
-            <Column header="Action" class="min-w-48">
-                <template #body="slotProps">
-
-                    <button type="button"
-                        @click="setForUpdatePregnancy(slotProps.data), updatePregnancyOrNot = true, addUpdateModalVisible = true"
-                        class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Update'"><v-icon
-                            name="fa-edit"></v-icon></button>
-
-                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
-                        class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
-                            name="bi-trash"></v-icon></button>
-                </template>
-            </Column>
-            <template #footer>
-                <Paginator v-on:page="getPregnancies()" ref="paginator" :rows="10" :totalRecords="totalRecords"
-                    :rowsPerPageOptions="[10, 25, 50, 100]"></Paginator>
-            </template>
-        </DataTable>
-
         <Dialog v-model:visible="addUpdateModalVisible" maximizable modal header="Pregnancy Form" position="top"
             class="md:w-3/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="!updatePregnancyOrNot ? insertPregnancy() : updatePregnancy()">
                 <label for="" v-if="!updatePregnancyOrNot">Select Pregnant</label>
-
-                <Select v-if="!updatePregnancyOrNot" v-model="pregnancyInfo.personal_profile_id" :options="females"
+                <Select v-if="!updatePregnancyOrNot" v-model="pregnancyInfo.personal_profile_id"  :options="females"
                     optionValue="id" filter optionLabel="lastname" placeholder="Select" class="w-full">
                     <template #option="slotProps">
                         <div class="flex items-center">
@@ -99,6 +52,49 @@
 
         </Dialog>
 
+        <DataTable :value="pregnancies" tableStyle="min-width: 50rem">
+            <template #header>
+                <div class="flex justify-between">
+                    <div class="flex items-center justify-center gap-x-2">
+                        <Button label="Show" class="w-[4em]"
+                            @click="updatePregnancyOrNot = false, addUpdateModalVisible = true"><v-icon
+                                name="co-user-female" scale="1.2"></v-icon></Button>
+                    </div>
+                    <div class="flex  ">
+                        <IconField>
+                            <InputIcon class="pi pi-search" />
+                            <InputText placeholder="Search" v-model="search" @keyup="getPregnancies()" />
+                        </IconField>
+                    </div>
+                </div>
+            </template>
+            <Column field="lastname" header="Lastname"></Column>
+            <Column field="firstname" header="Firstname"></Column>
+            <Column field="middlename" header="Middlename"></Column>
+            <Column field="post_partum" header="Post-Partum"></Column>
+            <Column field="family_planning" header="Family Planning"></Column>
+            <Column field="type_of_delivery" header="Type of Delivery"></Column>
+            <Column field="lmp" header="LMP (Last Menstrual Period)"></Column>
+            <Column field="edc" header="EDC (Estimated Date of Confinement)"></Column>
+            <Column field="gp" header="GP (Gravida/Para)"></Column>
+            <Column header="Action" class="min-w-48">
+                <template #body="slotProps">
+
+                    <button type="button"
+                        @click="setForUpdatePregnancy(slotProps.data), updatePregnancyOrNot = true, addUpdateModalVisible = true"
+                        class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Update'"><v-icon
+                            name="fa-edit"></v-icon></button>
+
+                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
+                        class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
+                            name="bi-trash"></v-icon></button>
+                </template>
+            </Column>
+            <template #footer>
+                <Paginator v-on:page="getPregnancies()" ref="paginator" :rows="10" :totalRecords="totalRecords"
+                    :rowsPerPageOptions="[10, 25, 50, 100]"></Paginator>
+            </template>
+        </DataTable>
     </div>
 </template>
 <script setup>
@@ -158,7 +154,6 @@ async function getFemales() {
         }
     }).then(response => {
         females.value = response.data.females
-        // console.log(response.data.females)
     }).catch(err => {
         console.error(err)
     })
@@ -185,7 +180,7 @@ async function getPregnancies() {
     }).then(response => {
         pregnancies.value = response.data.pregnancies
         totalRecords.value = response.data.count
-        console.log(response.data.pregnancies)
+        // console.log(response.data.pregnancies)
     }).catch(err => {
         console.error(err)
     })
@@ -206,10 +201,10 @@ async function insertPregnancy() {
         })
         await getFemales()
         await getPregnancies()
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
         addUpdateModalVisible.value = false
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 async function updatePregnancy() {
@@ -228,10 +223,10 @@ async function updatePregnancy() {
         })
         await getFemales()
         await getPregnancies()
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Updated successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
         addUpdateModalVisible.value = false
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 function confirmArchive() {

@@ -51,7 +51,7 @@ async function logout() {
                     </g>
                 </svg>
 
-                <span>HEALTHDATAEASASE</span>
+                <span class="md:text-xl text-base">HEALTHDATAEASA</span>
             </router-link>
         </div>
 
@@ -60,15 +60,15 @@ async function logout() {
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>
-                <div class="relative">
-                    <!-- v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }" -->
+                <!-- <div class="relative">
+                  
                     <Button @click="color = color ? false : true" type="button"
                         class="layout-topbar-action layout-topbar-action-highlight">
                         <i class="pi pi-palette"></i>
                     </Button>
 
                     <AppConfigurator v-if="color" />
-                </div>
+                </div> -->
             </div>
 
             <button class="layout-topbar-menu-button layout-topbar-action"
@@ -81,7 +81,7 @@ async function logout() {
                 <div class="layout-topbar-menu-content relative group">
                     <button type="button" class="layout-topbar-action static group" @click="logout()">
                         <i class="pi pi-user"></i>
-                        <span>Profile</span>
+                        <span>Logout</span>
                     </button>
                     <div class="absolute top-12 bg-white w-[200px] rounded-sm right-0 hidden group-hover:block">
                         <!-- Content here -->

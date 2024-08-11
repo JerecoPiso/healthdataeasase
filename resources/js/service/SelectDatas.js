@@ -3,9 +3,9 @@ export const blood_type = [
     { name: 'B' },
     { name: 'AB' },
     { name: 'O' },
+    { name: 'NA' },
     { name: 'Other(specify)' }
 ]
-
 export const civil_status = [
     { name: 'Single' },
     { name: 'Married' },
@@ -24,6 +24,7 @@ export const educational_attainment = [
     { name: 'College-Graduate' },
     { name: 'Vocational/Technical' },
     { name: 'College-Level' },
+    { name: 'None' },
     { name: 'Other(specify)' },
 ]
 export const electricity = [
@@ -37,6 +38,7 @@ export const family_planning = [
     { name: 'Pills (Oral Contraceptives)' },
     { name: 'Implant (Implanon/Nexplanon)' },
     { name: 'Condom' },
+    { name: 'None' },
     { name: 'Other(specify)' },
 ]
 export const health_status = [
@@ -46,6 +48,7 @@ export const health_status = [
     { name: 'Cancer' },
     { name: 'PWD (Person with Disability)' },
     { name: 'Blindness (Visual Impairment)' },
+    { name: 'None' },
     { name: 'Other(specify)' }
 ]
 export const maintenance = [
@@ -60,6 +63,7 @@ export const nhts = [
     { name: 'MCCT (Modified Conditional Cash Transfer)' },
     { name: 'UCT (Unconditional Cash Transfer)' },
     { name: 'Non-NHTS' },
+    { name: 'None' },
 ]
 export const relationship_to_head = [
     { name: 'Household Head' },
@@ -72,6 +76,7 @@ export const relationship_to_head = [
     { name: 'Daughter-in-law' },
     { name: 'Grand Daughter' },
     { name: 'Grand Son' },
+    { name: 'None' },
     { name: 'Other(specify)' },
 ]
 export const sex = [
@@ -90,6 +95,7 @@ export const type_of_delivery = [
     { name: 'Vaginal Delivery (NSVD)' },
     { name: 'Cesarean Section (C-Section)' },
     { name: 'Vacuum Extraction Forceps Delivery' },
+    { name: 'None' },
     { name: 'Other(specify)' }
 ]
 export const water_supply = [
@@ -111,5 +117,6 @@ export const work = [
     { name: 'Student' },
     { name: 'Retired' },
     { name: 'Unemployed' },
+    { name: 'N/A' },
     { name: 'Other(specify)' },
 ]

@@ -33,11 +33,7 @@ const router = createRouter({
                     name: 'personal',
                     component: () => import('@/views/pages/profile/Personal.vue')
                 },
-                {
-                    path: '/healthdataeasase/public/profile/health',
-                    name: 'health',
-                    component: () => import('@/views/pages/profile/Health.vue')
-                },
+               
                 {
                     path: '/healthdataeasase/public/profile/household',
                     name: 'household',
@@ -53,7 +49,16 @@ const router = createRouter({
                     path: '/healthdataeasase/public/administrator/users',
                     name: 'users',
                     component: () => import('@/views/pages/administrator/Users.vue')
-                }
+                },
+
+
+
+                // health
+                {
+                    path: '/healthdataeasase/public/health/vaccination',
+                    name: 'health',
+                    component: () => import('@/views/pages/health/Vaccination.vue')
+                },
             ]
         },
        

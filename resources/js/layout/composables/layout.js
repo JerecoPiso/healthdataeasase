@@ -19,6 +19,7 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
+
     const setPrimary = (value) => {
         layoutConfig.primary = value;
     };
@@ -40,6 +41,7 @@ export function useLayout() {
     };
 
     const toggleDarkMode = () => {
+       
         if (!document.startViewTransition) {
             executeDarkModeToggle();
 
@@ -51,6 +53,7 @@ export function useLayout() {
 
     const executeDarkModeToggle = () => {
         layoutConfig.darkTheme = !layoutConfig.darkTheme;
+        localStorage.setItem('color-theme', layoutConfig.darkTheme ? 'dark' : 'light');
         document.documentElement.classList.toggle('app-dark');
     };
 

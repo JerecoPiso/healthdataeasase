@@ -14,13 +14,13 @@ return new class extends Migration
         //
         Schema::create('audit_trails', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users')->onDelete('restrict')->onUpdate('cascade');
-            $table->integer('reference_id')->nullable();
+            $table->foreignId('user_id')->default(0);
+            $table->integer('reference_id')->default(0);
             $table->string('reference_table', length: 255)->nullable();
-            $table->string('process', length: 45);
+            $table->string('action', length: 45);
             $table->string('status', length: 10);
             $table->string('message', length: 255)->nullable();
-            $table->text('data')->nullable();
+            $table->text('data')->nullable()->comment('new data/first data');
             $table->timestamps();
         });
     }

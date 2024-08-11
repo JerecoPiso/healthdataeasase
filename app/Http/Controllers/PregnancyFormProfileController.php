@@ -4,10 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\PregnancyFormProfile;
 use Illuminate\Http\Request;
+use App\Models\AuditTrail;
 
 class PregnancyFormProfileController extends Controller
 {
-
+    private $response;
+    public function __construct()
+    {
+        $this->response = [];
+    }
+    public function archivePregnancy(Request $request)
+    {
+        try {
+            PregnancyFormProfile::where('id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'pregnancy_form_profiles', 'archivePregnancy', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
     public function getPregnancies(Request $request)
     {
         try {
@@ -32,6 +50,15 @@ class PregnancyFormProfileController extends Controller
     }
     public function insertPregnancy(Request $request)
     {
+        $request->validate([
+            'personal_profile_id' => ['required'],
+            'post_partum' => ['required'],
+            'family_planning' => ['required'],
+            'type_of_delivery' => ['required'],
+            'lmp' => ['required'],
+            'edc' => ['required'],
+            'gp' => ['required'],
+        ]);
         try {
             PregnancyFormProfile::create([
                 'personal_profile_id' => $request->personal_profile_id,
@@ -42,15 +69,26 @@ class PregnancyFormProfileController extends Controller
                 'edc' => $request->edc,
                 'gp' => $request->gp,
             ]);
-            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
+            $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
+        AuditTrail::createAuditTrail($request->user()->id, 0, 'pregnancy_form_profiles', 'insertPregnancy', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
     }
     public function updatePregnancy(Request $request)
     {
+        $request->validate([
+            'personal_profile_id' => ['required'],
+            'post_partum' => ['required'],
+            'family_planning' => ['required'],
+            'type_of_delivery' => ['required'],
+            'lmp' => ['required'],
+            'edc' => ['required'],
+            'gp' => ['required'],
+        ]);
         try {
-            PregnancyFormProfile::where('id', $request->id)->update([
+            $pregnancy = PregnancyFormProfile::where('id', $request->id)->update([
                 'personal_profile_id' => $request->personal_profile_id,
                 'post_partum' => $request->post_partum,
                 'family_planning' => $request->family_planning,
@@ -59,20 +97,16 @@ class PregnancyFormProfileController extends Controller
                 'edc' => $request->edc,
                 'gp' => $request->gp,
             ]);
-            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
+            if ($pregnancy) {
+                $this->response = ['message' => 'Updated successfully', 'status' => 'success', 'pregnancy' => $pregnancy, 'statusCode' => 201];
+            } else {
+                $this->response = ['message' => 'Update failed', 'status' => 'error', 'statusCode' => 403];
+            }
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'pregnancy_form_profiles', 'updatePregnancy', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
     }
-    public function archivePregnancy(Request $request)
-    {
-        try {
-            PregnancyFormProfile::where('id', $request->id)->update([
-                'archive' => 1,
-            ]);
-            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
-        }
-    }
+   
 }

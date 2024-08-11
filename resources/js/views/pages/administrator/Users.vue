@@ -29,12 +29,11 @@
                         <label for="">Suffix</label>
                         <InputText class="w-full" v-model="userinfo.suffix" />
                     </div>
-                    <div class="md:col-span-1 col-span-3">
+                    <div class="md:col-span-1 col-span-3" v-if="!updateUserOrNot">
                         <label for="">Password</label>
                         <Password v-model="userinfo.password" placeholder="Password" toggleMask required
                             :toggleMask="true" class="mb-4" fluid>
                         </Password>
-
                     </div>
                 </div>
                 <label for="">Admin</label> <br />
@@ -274,7 +273,7 @@ function setForUpdateUser(user) {
         if (key == 'role') {
             isAdmin.value = user[key] == 0 ? true : false
         } else {
-            if (key !== 'password') {
+            if (key !== 'password' && key !== 'old_password' && key !== 'retype_password') {
                 userinfo.value[key] = user[key]
             }
         }

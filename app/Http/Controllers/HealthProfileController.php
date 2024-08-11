@@ -2,13 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditTrail;
 use App\Models\HealthProfile;
 use Illuminate\Http\Request;
-
 class HealthProfileController extends Controller
 {
-    //
-   
+    private $response;
+    public function __construct()
+    {
+        $this->response = [];
+    }
+    public function archiveHealthProfile(Request $request)
+    {
+        try {
+            HealthProfile::where('id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'health_profiles', 'archivePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
     public function updateHealthProfile(Request $request)
     {
         try {
@@ -23,23 +39,14 @@ class HealthProfileController extends Controller
                     'health_status' => $request->health_status
                 ]);
             if ($health) {
-                return response()->json(['message' => 'Update successful', 'status' => 'success', 'health' => $health], 201);
+                $this->response = ['message' => 'Updated successfully', 'status' => 'success', 'health' => $health, 'statusCode' => 201];
             } else {
-                return response()->json(['message' => 'Update failed', 'status' => 'error',], 500);
+                $this->response = ['message' => 'Update failed', 'status' => 'error', 'statusCode' => 403];
             }
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
-    }
-    public function archiveHealthProfile(Request $request)
-    {
-        try {
-            HealthProfile::where('id', $request->id)->update([
-                'archive' => 1,
-            ]);
-            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
-        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->health_id, 'health_profiles', 'updateHealthProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
     }
 }

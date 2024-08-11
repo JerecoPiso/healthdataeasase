@@ -118,16 +118,19 @@
                     </div>
                 </div>
             </template>
-            <!-- <Column field="id" header="ID"></Column> -->
+            <Column field="philhealth_number" header="Philhealth"></Column>
             <Column field="lastname" sortable header="Lastname"></Column>
             <Column field="firstname" sortable header="Firstname"></Column>
             <Column field="middlename" header="Middlename"></Column>
             <Column field="birthdate" header="Birthdate"></Column>
             <Column field="sex" sortable header="Sex"></Column>
             <Column field="civil_status" sortable header="Civil Status"></Column>
-            <Column field="phone_number" header="Phone No."></Column>
+            
+            <!-- <Column field="phone_number" header="Phone No."></Column> -->
             <Column field="educational_attainment" sortable header="Educational Attainment"></Column>
             <Column field="work" sortable header="Work"></Column>
+            <Column field="health_status" sortable header="Health Status"></Column>
+            <Column field="maintenance" sortable header="Maintenance"></Column>
             <Column header="Action" class="min-w-52">
                 <template #body="slotProps">
                     <button type="button"
@@ -199,41 +202,14 @@ const viewHealthInfoOnly = ref(false)
 watch(
     () => healthInfo.value.weight,
     () => {
-        healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
+        healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
     }
 )
 onMounted(async () => {
     await getPersonalProfile()
     isLoading.value = false
 })
-function confirmArchive() {
-    confirm.require({
-        message: 'Are you sure you want to archive?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        rejectProps: {
-            label: 'Cancel',
-            severity: 'secondary',
-            outlined: true
-        },
-        acceptProps: {
-            label: 'Save'
-        },
-        accept: async () => {
-            await window.axios.delete(`${window.baseurl}api/personalprofile/archivePersonalProfile/${id.value}`, {
-                headers: {
-                    'Authorization': `Bearer ${VueCookies.get('token')}`
-                }
-            })
-            await getPersonalProfile()
-            toast.add({ severity: 'success', summary: 'Success', detail: 'Archived successfully', life: 3000 });
-        },
-        reject: () => {
-            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
-        }
-    });
 
-}
 async function updatePersonalProfile() {
     try {
         if (profileInfo.value.birthdate) {
@@ -250,9 +226,9 @@ async function updatePersonalProfile() {
         })
         editPersonalProfileModal.value = false
         await getPersonalProfile()
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Updated successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 async function updateHealthProfile() {
@@ -264,9 +240,9 @@ async function updateHealthProfile() {
         })
         editHealthModal.value = false
         await getPersonalProfile()
-        toast.add({ severity: 'info', summary: 'Info', detail: 'Updated successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 async function getPersonalProfile() {
@@ -295,6 +271,34 @@ async function getPersonalProfile() {
     }).catch(err => {
         console.error(err)
     })
+}
+function confirmArchive() {
+    confirm.require({
+        message: 'Are you sure you want to archive?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Save'
+        },
+        accept: async () => {
+            await window.axios.delete(`${window.baseurl}api/personalprofile/archivePersonalProfile/${id.value}`, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            await getPersonalProfile()
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Archived successfully', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+
 }
 function setForUpdatePersonalProfile(profile) {
     for (const key in profileInfo.value) {

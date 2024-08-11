@@ -9,7 +9,7 @@
                 <!-- <label for="">Household Number</label>
                 <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" /> -->
                 <label for="">NHTS (National Household Targeting System)</label>
-                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts"  optionLabel="name"
+                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" :invalid="householdInfo.nhts == null" optionLabel="name"
                     class="w-full " />
                 <label for="">Electricity</label>
                 <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
@@ -35,22 +35,22 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">NHTS (National Household Targeting System)</label>
-                        <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" 
+                        <Select v-model="householdInfo.nhts" optionValue="name"  :options="nhts" 
                             optionLabel="name" class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Electricity</label>
-                        <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
+                        <Select v-model="householdInfo.electricity" optionValue="name"  :options="electricity" editable
                             optionLabel="name" class="w-full " required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Water Supply</label>
-                        <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
+                        <Select v-model="householdInfo.water_supply" optionValue="name"  :options="water_supply" editable
                             optionLabel="name" class="w-full " required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Toilet</label>
-                        <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable
+                        <Select v-model="householdInfo.toilet" optionValue="name"  :options="toilet" editable
                             optionLabel="name" class="w-full " />
                     </div>
                 </div>
@@ -58,11 +58,11 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Lastname</label>
-                        <InputText class="w-full" required v-model="profileInfo.lastname" />
+                        <InputText class="w-full" required v-model="profileInfo.lastname"  />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Firstname</label>
-                        <InputText class="w-full" v-model="profileInfo.firstname" />
+                        <InputText class="w-full" v-model="profileInfo.firstname" required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Middlename</label>
@@ -74,7 +74,7 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Birthdate</label>
-                        <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" />
+                        <DatePicker class="w-full" v-model="profileInfo.birthdate"  required dateFormat="yy-mm-dd" />
                     </div>
                    
                     <div class="md:col-span-1 col-span-3">
@@ -130,15 +130,15 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Height(cm)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.height" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.height" required :useGrouping="false" inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Weight(kl)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" :useGrouping="false" required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">BMI(Body Mass Index)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" :useGrouping="false" disabled />
+                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" required :useGrouping="false" disabled />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
@@ -235,7 +235,7 @@ const healthInfo = ref({
     maintenance: '',
     height: 0,
     weight: 0,
-    bmi: '',
+    bmi: 0,
     health_status: ''
 })
 const households = ref([])
@@ -272,7 +272,19 @@ const updateHouseholdModalVisible = ref(false)
 watch(
     () => healthInfo.value.weight,
     () => {
-        healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
+        if(healthInfo.value.height){
+            healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
+        }
+        // healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
+    }
+)
+watch(
+    () => healthInfo.value.height,
+    () => {
+        if(healthInfo.value.weight){
+            healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
+        }
+       
     }
 )
 watch(
@@ -308,9 +320,10 @@ async function insertHouseholdProfile() {
         addModalVisible.value = false
         clearVariables()
         await getHousehold()
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
+
     }
 }
 async function insertPersonalProfile() {
@@ -332,7 +345,7 @@ async function insertPersonalProfile() {
         toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
         router.push({ name: 'personal' })
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 async function getHousehold() {
@@ -355,7 +368,6 @@ async function getHousehold() {
             'Authorization': `Bearer ${VueCookies.get('token')}`
         }
     }).then(response => {
-        console.log(response.data)
         households.value = response.data.data
         totalRecords.value = response.data.count
     }).catch(err => {
@@ -378,7 +390,7 @@ async function getHouseHoldNumber() {
 }
 async function updateHousehold() {
     try {
-        console.log(householdInfo.value)
+      
         const response = await window.axios.post(`${window.baseurl}api/household/updateHousehold`, householdInfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
@@ -387,10 +399,10 @@ async function updateHousehold() {
         updateHouseholdModalVisible.value = false
         clearVariables()
         await getHousehold()
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Updated successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
         console.log(response.data)
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 function confirmArchive() {

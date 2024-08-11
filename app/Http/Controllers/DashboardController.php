@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class DashboardController extends Controller
 {
     //
-    public function getCounts()
+    public function getCounts(Request $request)
     {
         $users = User::where('archive', 0)->get('id')->count();
         $household = HouseholdProfile::where('archive', 0)->get('id')->count();
@@ -29,7 +29,8 @@ class DashboardController extends Controller
                     'household' => $household,
                     'personal' => $personal,
                     'health' => $health,
-                    'pregnancy' => $pregnancy
+                    'pregnancy' => $pregnancy,
+                    // 'user' => $request->user()
                 ]
             ]
         );

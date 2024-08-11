@@ -6,10 +6,27 @@ use App\Models\PersonalProfile;
 use Illuminate\Http\Request;
 use App\Models\HealthProfile;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\AuditTrail;
 class PersonalProfileController extends Controller
-{
-    //
+{   
+    private $response;
+    public function __construct()
+    {
+        $this->response = [];
+    }
+    public function archivePersonalProfile(Request $request)
+    {
+        try {
+            PersonalProfile::where('id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'archivePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
     public function getFemales(Request $request)
     {
         try {
@@ -27,8 +44,32 @@ class PersonalProfileController extends Controller
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
-    public function insertPersonalProfile(Request $request)
+    public function getPersonalProfile(Request $request)
     {
+        try {
+            $profile = PersonalProfile::PersonalProfileWithHealthProfile($request);
+            return response()->json(['data' => $profile['profilesPage'], 'count' => $profile['count']]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
+    public function insertPersonalProfile(Request $request)
+    {   
+        $request->validate([
+            'lastname' => ['required'],
+            'firstname' => ['required'],
+            'birthdate' => ['required'],
+            'sex' => ['required'],
+            'civil_status' => ['required'],
+            'educational_attainment' => ['required'],
+            'work' => ['required'],
+            'household_profile_id' => ['required'],
+            'relation_ship_to_head' => ['required'],
+            'blood_type' => ['required'],
+            'height' => ['required'],
+            'weight' => ['required'],
+            'bmi' => ['required'],
+        ]);
         try {
             $profile = PersonalProfile::create([
                 'lastname' => $request->lastname,
@@ -55,16 +96,28 @@ class PersonalProfileController extends Controller
                 "health_status" => $request->health_status,
             ]);
             if ($profile) {
-                return response()->json(['message' => 'Registration successful', 'status' => 'success', 'user' => $profile], 201);
+                $this->response = ['message' => 'Registration successful', 'status' => 'success', 'user' => $profile, 'statusCode' => 201];
             } else {
-                return response()->json(['message' => 'Registration failed', 'status' => 'error',], 500);
+                $this->response = ['message' => 'Registration failed', 'status' => 'error', 'statusCode' => 403];
             }
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
+        AuditTrail::createAuditTrail($request->user()->id, 0, 'personal_profiles', 'insertPersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
     }
     public function updatePersonalProfile(Request $request)
-    {
+    {   
+        $request->validate([
+            'lastname' => ['required'],
+            'firstname' => ['required'],
+            'birthdate' => ['required'],
+            'sex' => ['required'],
+            'civil_status' => ['required'],
+            'educational_attainment' => ['required'],
+            'work' => ['required'],
+            'relation_ship_to_head' => ['required'],
+        ]);
         try {
             $profile = PersonalProfile::where('id', $request->id)
                 ->update([
@@ -81,32 +134,14 @@ class PersonalProfileController extends Controller
                 ]);
 
             if ($profile) {
-                return response()->json(['message' => 'Update successful', 'status' => 'success', 'user' => $profile], 201);
+                $this->response = ['message' => 'Updated successfully', 'status' => 'success', 'user' => $profile, 'statusCode' => 201];
             } else {
-                return response()->json(['message' => 'Update failed', 'status' => 'error',], 500);
+                $this->response = ['message' => 'Update failed', 'status' => 'error', 'statusCode' => 403];
             }
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
-    }
-    public function getPersonalProfile(Request $request)
-    {
-        try {
-            $profile = PersonalProfile::PersonalProfileWithHealthProfile($request);
-            return response()->json(['data' => $profile['profilesPage'], 'count' => $profile['count']]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
-        }
-    }
-    public function archivePersonalProfile(Request $request)
-    {
-        try {
-            PersonalProfile::where('id', $request->id)->update([
-                'archive' => 1,
-            ]);
-            return response()->json(['message' => 'Successful', 'status' => 'success'], 201);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
-        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'updatePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
     }
 }

@@ -16,7 +16,7 @@ export const calculateEDC = (edcDate) => {
 export const calculateBMI = (weightInKG, heightInCM) => {
     let heightInMeters = heightInCM / 100;
     // Calculate BMI using the formula
-    return (weightInKG / (heightInMeters * heightInMeters)).toFixed(2);
+    return ((weightInKG / (heightInMeters * heightInMeters)).toFixed(2)) || 0;
 }
 
 
