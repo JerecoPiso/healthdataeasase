@@ -70,22 +70,44 @@
     </div>
     <div class="col-span-12 xl:col-span-6" v-if="!isLoading">
         <div class="grid grid-cols-12 gap-4 mt-4">
-            <div class="md:col-span-8">
+            <div class="md:col-span-8 col-span-12">
                 <div class="card mb-0">
-                    <Chart type="bar" :data="ageChart" :options="ageOptions" :plugins="plugins" />
+                    <label class="block text-muted-color font-medium mb-4">Age</label>
+                    <div class="card flex justify-center h-auto">
+                        <Chart type="bar" :data="ageChart" :options="ageOptions" :plugins="plugins" class="w-full"  />
+                    </div>
+                   
+                </div>
+                <div class="card mb-0 mt-4">
+                    <label class="block text-muted-color font-medium mb-4">Maintenance</label>
+                    <div class="card flex justify-center h-auto">
+                        <Chart type="bar" :data="maintenanceChart" :options="maintenanceChartOptions" :plugins="plugins" class="w-full" />
+                    </div>
+                   
+                </div>
+                <div class="card mb-0 mt-4 ">
+                    <label class="block text-muted-color font-medium mb-4">Health Status</label>
+                    <div class="card flex justify-center h-auto">
+                        <Chart type="bar" :data="healthStatusChart" :options="healthStatusChartOptions"
+                        :plugins="plugins" class="w-full"  />
+                    </div>
+                   
                 </div>
             </div>
-            <div class="md:col-span-4">
+            <div class="md:col-span-4 col-span-12">
                 <div class="card mb-0">
                     <label class="block text-muted-color font-medium mb-4">Gender</label>
+                    
                     <Chart type="doughnut" :data="genderChart" :options="genderOptions" :plugins="plugins" />
                 </div>
                 <div class="card mb-0 mt-4">
-                    <label class="block text-muted-color font-medium mb-4">BMI Categories <span class="text-slate-500 text-sm">(18 yrs. old below)</span></label>
+                    <label class="block text-muted-color font-medium mb-4">BMI Categories <span
+                            class="text-slate-500 text-sm">(18 yrs. old below)</span></label>
                     <Chart type="doughnut" :data="bmiTeenChart" :options="bmiTeenChartOptions" :plugins="plugins" />
                 </div>
                 <div class="card mb-0 mt-4">
-                    <label class="block text-muted-color font-medium mb-4">BMI Categories <span class="text-slate-500 text-sm">(18 yrs. old above)</span></label>
+                    <label class="block text-muted-color font-medium mb-4">BMI Categories <span
+                            class="text-slate-500 text-sm">(18 yrs. old above)</span></label>
                     <Chart type="doughnut" :data="bmiAdultChart" :options="bmiAdultChartOptions" :plugins="plugins" />
                 </div>
             </div>
@@ -111,6 +133,18 @@ const genderChart = ref()
 const genderOptions = ref()
 const genderCounts = ref()
 
+const maintenanceChart = ref()
+const maintenanceChartOptions = ref()
+const maintenanceDatas = ref({
+    labels: [],
+    data: []
+})
+const healthStatusChart = ref()
+const healthStatusChartOptions = ref()
+const healthStatusDatas = ref({
+    labels: [],
+    data: []
+})
 const counts = ref({
     users: 0,
     household: 0,
@@ -124,9 +158,16 @@ onMounted(async () => {
     await getCounts()
     await getCountsByAgeGroup()
     const bgColors = ['#00A9FF', '#68D2E8', '#FDDE55', '#FEEFAD']
-    ageChart.value = setBarChartData(['0-2 yrs. old', '3-18 yrs. old', '19-59 yrs. old', '60 yrs. old Above'], Object.entries(ageCounts.value).map(([key, value]) => value), bgColors)
+    ageChart.value = setBarChartData(false, 'Ages', ['0-2 yrs. old', '3-18 yrs. old', '19-59 yrs. old', '60 yrs. old Above'], Object.entries(ageCounts.value).map(([key, value]) => value), bgColors)
     ageOptions.value = setBarChartOptions()
 
+    maintenanceChart.value = setBarChartData(true, 'Maintenance', maintenanceDatas.value.labels, maintenanceDatas.value.data)
+    maintenanceChartOptions.value = setBarChartOptions()
+
+    healthStatusChart.value = setBarChartData(true, 'Health Status', healthStatusDatas.value.labels, healthStatusDatas.value.data)
+    healthStatusChartOptions.value = setBarChartOptions()
+
+    Object.entries(genderCounts.value).forEach((key, value) => console.log(key[1]))
     genderChart.value = setDoughnutData(Object.entries(genderCounts.value).map((key, value) => key[0]), Object.entries(genderCounts.value).map((key, value) => key[1]), ['#00FFAB', '#92B4EC'])
     genderOptions.value = setDoughnutOptions()
 
@@ -148,7 +189,15 @@ async function getCountsByAgeGroup() {
         genderCounts.value = response.data.genders
         bmiTeenCounts.value = response.data.bmiTeenagers
         bmiAdultCounts.value = response.data.bmiAdults
-        
+
+        response.data.maintenance.forEach(el => {
+            maintenanceDatas.value.labels.push(el.maintenance)
+            maintenanceDatas.value.data.push(el.total)
+        })
+        response.data.health_status.forEach(el => {
+            healthStatusDatas.value.labels.push(el.health_status)
+            healthStatusDatas.value.data.push(el.total)
+        })
         console.log(response.data)
     } catch (err) {
         console.log(err.response)
@@ -162,7 +211,7 @@ async function getCounts() {
             }
         })
         if (response.statusText === "OK") {
-            console.log(response.data)
+            // console.log(response.data)
             for (const key in counts.value) {
                 counts.value[key] = response.data.counts[key]
             }

@@ -1,5 +1,5 @@
 <template>
-      <Spinner v-if="isLoading" />
+    <Spinner v-if="isLoading" />
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
@@ -9,8 +9,29 @@
                 <!-- <label for="">Household Number</label>
                 <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" /> -->
                 <label for="">NHTS (National Household Targeting System)</label>
-                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" :invalid="householdInfo.nhts == null" optionLabel="name"
+                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts"
+                    :invalid="householdInfo.nhts == null" optionLabel="name" class="w-full " />
+                <label for="">Electricity</label>
+                <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
+                    optionLabel="name" class="w-full " />
+                <label for="">Water Supply</label>
+                <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
+                    optionLabel="name" class="w-full " />
+                <label for="">Toilet</label>
+                <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable optionLabel="name"
                     class="w-full " />
+                <Button label="Submit" type="submit" class="w-full mt-2" />
+            </form>
+        </Dialog>
+        <Dialog v-model:visible="separateHouseholdModalVisible" maximizable modal
+            header="Separate Household Information" class="md:w-2/6 w-full"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <form @submit.prevent="separateHousehold()">
+                <label for="">Household Number</label>
+                <InputText class="w-full" v-model="householdInfo.household_number" :disabled="true" />
+                <label for="">NHTS (National Household Targeting System)</label>
+                <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts"
+                    :invalid="householdInfo.nhts == null" optionLabel="name" class="w-full " />
                 <label for="">Electricity</label>
                 <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
                     optionLabel="name" class="w-full " />
@@ -35,22 +56,22 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">NHTS (National Household Targeting System)</label>
-                        <Select v-model="householdInfo.nhts" optionValue="name"  :options="nhts" 
-                            optionLabel="name" class="w-full " />
+                        <Select v-model="householdInfo.nhts" optionValue="name" :options="nhts" optionLabel="name"
+                            class="w-full " />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Electricity</label>
-                        <Select v-model="householdInfo.electricity" optionValue="name"  :options="electricity" editable
+                        <Select v-model="householdInfo.electricity" optionValue="name" :options="electricity" editable
                             optionLabel="name" class="w-full " required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Water Supply</label>
-                        <Select v-model="householdInfo.water_supply" optionValue="name"  :options="water_supply" editable
+                        <Select v-model="householdInfo.water_supply" optionValue="name" :options="water_supply" editable
                             optionLabel="name" class="w-full " required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Toilet</label>
-                        <Select v-model="householdInfo.toilet" optionValue="name"  :options="toilet" editable
+                        <Select v-model="householdInfo.toilet" optionValue="name" :options="toilet" editable
                             optionLabel="name" class="w-full " />
                     </div>
                 </div>
@@ -58,7 +79,7 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Lastname</label>
-                        <InputText class="w-full" required v-model="profileInfo.lastname"  />
+                        <InputText class="w-full" required v-model="profileInfo.lastname" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Firstname</label>
@@ -74,9 +95,9 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Birthdate</label>
-                        <DatePicker class="w-full" v-model="profileInfo.birthdate"  required dateFormat="yy-mm-dd" />
+                        <DatePicker class="w-full" v-model="profileInfo.birthdate" required dateFormat="yy-mm-dd" />
                     </div>
-                   
+
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Age</label>
                         <InputText class="w-full" v-model="profileInfo.age" disabled />
@@ -130,15 +151,18 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Height(cm)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.height" required :useGrouping="false" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.height" required :useGrouping="false"
+                            inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Weight(kl)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" :useGrouping="false" required />
+                        <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly"
+                            :useGrouping="false" required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">BMI(Body Mass Index)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" required :useGrouping="false" disabled />
+                        <InputNumber class="w-full" v-model="healthInfo.bmi" inputId="withoutgrouping" required
+                            :useGrouping="false" disabled />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Health Status</label>
@@ -174,7 +198,7 @@
             </template>
             <Column expander style="width: 5rem" />
             <Column field="household_number" header="Household No."></Column>
-            <Column field="household_head" header="Household Head"></Column>
+            <!-- <Column field="household_head" header="Household Head"></Column> -->
             <Column field="nhts" header="NHTS"></Column>
             <Column field="electricity" header="Electricity"></Column>
             <Column field="water_supply" header="Water Supply"></Column>
@@ -197,14 +221,33 @@
             </Column>
             <template #expansion="slotProps">
                 <div class="p-4">
-                    <p class="uppercase font-bold">Household Members ({{ slotProps.data.household_number }})</p>
+                    <p class="uppercase font-bold">Household Members</p>
                     <DataTable :value="slotProps.data.personal_profiles">
-                        <Column field="lastname" header="Lastname"></Column>
+                        <Column field="lastname" header="Lastname">
+                            <template #body="slotProp">
+                                <span v-if="slotProp.data.id === slotProps.data.personal_profile_id" class="bg-sky-500 px-3 py-1 rounded-full text-white">Head</span>
+                                {{ slotProp.data.lastname }}
+                            </template>
+                        </Column>
                         <Column field="firstname" header="Firstname"></Column>
                         <Column field="middlename" header="Middlename"></Column>
                         <Column field="sex" header="Sex"></Column>
                         <Column field="civil_status" header="Civil Status"></Column>
                         <Column field="relation_ship_to_head" header="Relationship to Head"></Column>
+                        <Column header="Action">
+                            <template #body="slotProp">
+                                <button type="button"
+                                    @click="confirmChangeHouseholdHead(slotProp.data.id, slotProps.data.personal_profile_id, slotProps.data.id)"
+                                    class="bg-sky-500 text-white py-1 px-2 rounded-sm"
+                                    v-tooltip.top="'Set as household head'"><v-icon
+                                        name="fa-user-shield"></v-icon></button>
+                                <button type="button"
+                                    @click="setAsSeparateHousehold(slotProp.data.id, slotProps.data.personal_profile_id)"
+                                    class="ml-1 bg-green-500 text-white py-1 px-2 rounded-sm"
+                                    v-tooltip.top="'Separate household'"><v-icon
+                                        name="md-supervisedusercircle-round"></v-icon></button>
+                            </template>
+                        </Column>
                     </DataTable>
                 </div>
             </template>
@@ -241,6 +284,7 @@ const healthInfo = ref({
 const households = ref([])
 const householdInfo = ref({
     id: '',
+    personal_profile_id: '',
     household_number: '',
     nhts: '',
     electricity: '',
@@ -266,13 +310,14 @@ const profileInfo = ref({
 const personalInfoOnly = ref(true)
 const router = useRouter()
 const search = ref('')
+const separateHouseholdModalVisible = ref(false)
 const totalRecords = ref(0)
 const toast = useToast();
 const updateHouseholdModalVisible = ref(false)
 watch(
     () => healthInfo.value.weight,
     () => {
-        if(healthInfo.value.height){
+        if (healthInfo.value.height) {
             healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
         }
         // healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
@@ -281,16 +326,39 @@ watch(
 watch(
     () => healthInfo.value.height,
     () => {
-        if(healthInfo.value.weight){
+        if (healthInfo.value.weight) {
             healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
         }
-       
     }
 )
 watch(
     () => profileInfo.value.birthdate,
     () => {
         profileInfo.value.age = calculateAge(profileInfo.value.birthdate)
+    }
+)
+watch(
+    () => addModalVisible.value,
+    () => {
+        if (!addModalVisible.value) {
+            clearVariables()
+        }
+    }
+)
+watch(
+    () => updateHouseholdModalVisible.value,
+    () => {
+        if (!updateHouseholdModalVisible.value) {
+            clearVariables()
+        }
+    }
+)
+watch(
+    () => separateHouseholdModalVisible.value,
+    () => {
+        if (!separateHouseholdModalVisible.value) {
+            clearVariables()
+        }
     }
 )
 onMounted(async () => {
@@ -322,6 +390,7 @@ async function insertHouseholdProfile() {
         await getHousehold()
         toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
     } catch (err) {
+        console.log(err.response.data)
         toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
 
     }
@@ -345,6 +414,7 @@ async function insertPersonalProfile() {
         toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
         router.push({ name: 'personal' })
     } catch (err) {
+
         toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
@@ -388,9 +458,26 @@ async function getHouseHoldNumber() {
         console.error(err)
     })
 }
+async function separateHousehold() {
+    try {
+
+        const response = await window.axios.post(`${window.baseurl}api/household/separateHousehold`, householdInfo.value, {
+            headers: {
+                'Authorization': `Bearer ${VueCookies.get('token')}`
+            }
+        })
+        separateHouseholdModalVisible.value = false
+        clearVariables()
+        await getHousehold()
+        toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
+        console.log(response.data)
+    } catch (err) {
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
+    }
+}
 async function updateHousehold() {
     try {
-      
+
         const response = await window.axios.post(`${window.baseurl}api/household/updateHousehold`, householdInfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
@@ -403,6 +490,55 @@ async function updateHousehold() {
         console.log(response.data)
     } catch (err) {
         toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
+    }
+}
+async function setAsSeparateHousehold(personal_profile_id, household_personal_profile_id) {
+    if (personal_profile_id != household_personal_profile_id) {
+        await getHouseHoldNumber(),
+        householdInfo.value.personal_profile_id = personal_profile_id
+        separateHouseholdModalVisible.value = true
+    } else {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'The profile is the head of the household. Please changed the household head first.', life: 3000 });
+    }
+}
+function confirmChangeHouseholdHead(personal_profile_id, household_personal_profile_id, household_id) {
+    if (personal_profile_id != household_personal_profile_id) {
+        confirm.require({
+            message: 'Are you sure you want to change the household head?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            rejectProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptProps: {
+                label: 'Save'
+            },
+            accept: async () => {
+                try{
+                    const data = {
+                    id: household_id,
+                    personal_profile_id: personal_profile_id,
+                    household_personal_profile_id: household_personal_profile_id
+                }
+                const response = await window.axios.post(`${window.baseurl}api/household/changeHouseholdHead`, data, {
+                    headers: {
+                        'Authorization': `Bearer ${VueCookies.get('token')}`
+                    }
+                })
+                await getHousehold()
+                toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
+                }catch(err){
+                    toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
+                }
+            },
+            reject: () => {
+                toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+            }
+        });
+    } else {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'The profile is already the household head.', life: 3000 });
     }
 }
 function confirmArchive() {
@@ -419,13 +555,13 @@ function confirmArchive() {
             label: 'Save'
         },
         accept: async () => {
-            await window.axios.delete(`${window.baseurl}api/household/archiveHouseholdProfile/${id.value}`, {
+            const response = await window.axios.delete(`${window.baseurl}api/household/archiveHouseholdProfile/${id.value}`, {
                 headers: {
                     'Authorization': `Bearer ${VueCookies.get('token')}`
                 }
             })
             await getHousehold()
-            toast.add({ severity: 'success', summary: 'Success', detail: 'Archive successfully', life: 3000 });
+            toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
         },
         reject: () => {
             toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });

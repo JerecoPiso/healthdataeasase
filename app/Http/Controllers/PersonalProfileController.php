@@ -7,8 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\HealthProfile;
 use Illuminate\Support\Facades\DB;
 use App\Models\AuditTrail;
+
 class PersonalProfileController extends Controller
-{   
+{
     private $response;
     public function __construct()
     {
@@ -54,7 +55,7 @@ class PersonalProfileController extends Controller
         }
     }
     public function insertPersonalProfile(Request $request)
-    {   
+    {
         $request->validate([
             'lastname' => ['required'],
             'firstname' => ['required'],
@@ -106,8 +107,9 @@ class PersonalProfileController extends Controller
         AuditTrail::createAuditTrail($request->user()->id, 0, 'personal_profiles', 'insertPersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
+  
     public function updatePersonalProfile(Request $request)
-    {   
+    {
         $request->validate([
             'lastname' => ['required'],
             'firstname' => ['required'],

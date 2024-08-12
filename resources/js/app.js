@@ -55,11 +55,11 @@ import Card from 'primevue/card';
 import Checkbox from 'primevue/checkbox';
 import {
     BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiShieldLock, BiPersonCircle, CoUserFemale, CoColorPalette,
-    FaSearch, FaSpinner, FaUserPlus, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode,
+    FaSearch, FaSpinner, FaUserPlus, FaUsersCog, FaEdit,FaUserShield , FaHouseUser, LaSpinnerSolid,MdSupervisedusercircleRound , MdPregnantwoman, MdDarkmode,
     MdLightmode, MdVaccines, MdHealthandsafetySharp, RiDashboardLine, RiHealthBookLine
 } from "oh-vue-icons/icons";
 addIcons(BiTrash, BiPersonPlusFill, BiHouseDoorFill, BiShieldLock, BiPersonCircle, CoUserFemale, CoColorPalette,
-    FaSearch, FaSpinner, FaUserPlus, FaUsersCog, FaEdit, FaHouseUser, LaSpinnerSolid, MdPregnantwoman, MdDarkmode,
+    FaSearch, FaSpinner, FaUserPlus, FaUsersCog, FaEdit,FaUserShield , FaHouseUser, LaSpinnerSolid,MdSupervisedusercircleRound , MdPregnantwoman, MdDarkmode,
     MdLightmode, MdVaccines, MdHealthandsafetySharp, RiDashboardLine, RiHealthBookLine);
 const app = createApp(App);
 app.component('Chart', Chart);

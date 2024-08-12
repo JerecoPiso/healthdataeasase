@@ -35,8 +35,9 @@ class PersonalProfile extends Model
             ->where(function ($query) use ($request) {
                 $query->where('personal_profiles.firstname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('personal_profiles.lastname', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('personal_profiles.middlename', 'LIKE', '%' . $request->search . '%');
-                  
+                    ->orWhere('personal_profiles.middlename', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('hp.health_status', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('hp.maintenance', 'LIKE', '%' . $request->search . '%');
             });
         $totalProfiles = $profiles->count();
             $profilesPage = $profiles->orderBy('personal_profiles.id', 'desc')

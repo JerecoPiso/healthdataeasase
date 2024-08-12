@@ -37,6 +37,16 @@ class DashboardController extends Controller
     }
     public function getCountsByAgeGroup(Request $request)
     {
+
+        $maintenance = HealthProfile::select('maintenance', DB::raw('count(*) as total'))
+            ->where('archive', 0)
+            ->groupBy('maintenance')
+            ->get();
+        $health_status = HealthProfile::select('health_status', DB::raw('count(*) as total'))
+            ->where('archive', 0)
+            ->groupBy('health_status')
+            ->get();
+
         $ageGroups = PersonalProfile::select(
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 6 THEN 1 ELSE 0 END), 0) AS UNSIGNED) as age_0_6'),
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 18 THEN 1 ELSE 0 END), 0) AS UNSIGNED) as age_6_18'),
@@ -71,7 +81,9 @@ class DashboardController extends Controller
             'ages' => $ageGroups,
             'genders' => $genders,
             'bmiTeenagers' =>  $bmiGroupsTeenager,
-            'bmiAdults' => $bmiGroupsAdults
+            'bmiAdults' => $bmiGroupsAdults,
+            'maintenance' => $maintenance,
+            'health_status' => $health_status
         ]);
     }
 }

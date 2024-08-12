@@ -9,14 +9,14 @@ function generateBackgroundColor(count) {
     return bgc
 }
 
-export const setBarChartData = (labels, data, bgColors) => {
+export const setBarChartData = (ifWillGenerateBgs, label, labels, data, bgColors = []) => {
     return {
         labels: labels,
         datasets: [
             {
-                label: 'Age',
+                label: label,
                 data: data,
-                backgroundColor: bgColors,
+                backgroundColor: ifWillGenerateBgs ? generateBackgroundColor(labels.length) : bgColors,
                 borderWidth: 1
             }
         ]
@@ -54,6 +54,12 @@ export const setBarChartOptions = () => {
                     // color: surfaceBorder
                     display: false
                 }
+            },
+            
+        },
+        plugins: {
+            legend: {
+                display: false  // Hides the legend labels
             }
         }
     };

@@ -32,14 +32,16 @@ Route::prefix('personalprofile')->middleware('auth:sanctum')->controller(Persona
     Route::post('getPersonalProfile', 'getPersonalProfile');
     Route::post('getFemales', 'getFemales');
     Route::post('updatePersonalProfile', 'updatePersonalProfile');
-
+  
     Route::delete('archivePersonalProfile/{id}', 'archivePersonalProfile');
 });
 Route::prefix('household')->middleware('auth:sanctum')->controller(HouseholdProfileController::class)->group(function () {
     Route::post('insertHousehold', 'insertHousehold');
+    Route::post('changeHouseholdHead', 'changeHouseholdHead');
     Route::post('getHousehold', 'getHousehold');
     Route::post('getHouseHoldNumber', 'getHouseHoldNumber');
-
+    
+    Route::post('separateHousehold', 'separateHousehold');
     Route::post('updateHousehold', 'updateHousehold');
     Route::delete('archiveHouseholdProfile/{id}', 'archiveHouseholdProfile');
 });

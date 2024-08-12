@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('household_profiles', function (Blueprint $table) {
             $table->id();
             // household head
-            $table->string('household_head', length: 100)->nullable();
+            $table->bigInteger('personal_profile_id');
             $table->string("household_number")->nullable();
             $table->string("nhts", length: 255);
             $table->string("electricity", length: 45);

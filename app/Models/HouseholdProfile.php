@@ -10,7 +10,7 @@ class HouseholdProfile extends Model
     use HasFactory;
 
     protected $fillable = [
-        'person_id',
+        'personal_profile_id',
         'household_number',
         'nhts',
         'electricity',
