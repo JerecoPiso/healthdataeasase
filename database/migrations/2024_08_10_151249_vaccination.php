@@ -20,6 +20,8 @@ return new class extends Migration
             $table->smallInteger('dose')->default(0);
             $table->timestamp('vaccination_datetime', precision: 0);
             $table->text('remarks')->nullable();
+            $table->smallInteger('archive')->default(0);
+
             $table->timestamps();
         });
     }

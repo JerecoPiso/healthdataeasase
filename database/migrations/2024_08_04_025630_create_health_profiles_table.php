@@ -21,7 +21,7 @@ return new class extends Migration
             $table->smallInteger('weight');
             $table->float('bmi', precision: 53);
             $table->string('health_status')->nullable();
-            $table->smallInteger('archive')->default('0');
+            $table->smallInteger('archive')->default(0);
 
             $table->timestamps();
         });

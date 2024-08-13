@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("electricity", length: 45);
             $table->string("water_supply", length: 45);
             $table->string("toilet", length: 45);
-            $table->smallInteger('archive')->default('0');
+            $table->smallInteger('archive')->default(0);
             $table->timestamps();
         });
     }
