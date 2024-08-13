@@ -8,8 +8,10 @@ use App\Models\HouseholdProfile;
 use App\Models\PersonalProfile;
 use App\Models\HealthProfile;
 use App\Models\PregnancyFormProfile;
+use App\Models\Vaccination;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -37,6 +39,11 @@ class DashboardController extends Controller
     }
     public function getCountsByAgeGroup(Request $request)
     {
+
+        $vaccinatedTotal = Vaccination::where('archive', 0)->distinct('personal_profile_id')->count('id');
+        $totalBabies = PersonalProfile::where('birthdate', '>=', Carbon::now()->subMonths(12)->format('Y-m-d'))
+        ->where("archive", 0)
+        ->get()->count();
 
         $maintenance = HealthProfile::select('maintenance', DB::raw('count(*) as total'))
             ->where('archive', 0)
@@ -81,6 +88,7 @@ class DashboardController extends Controller
             DB::raw('CAST(IFNULL(SUM(CASE WHEN sex = "Female" THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Female'),
         )->where('archive', 0)
             ->first();
+            
         return response()->json([
             'ages' => $ageGroups,
             'genders' => $genders,
@@ -88,7 +96,9 @@ class DashboardController extends Controller
             'bmiAdults' => $bmiGroupsAdults,
             'maintenance' => $maintenance,
             'health_status' => $health_status,
-            'pregnants' => $pregnants
+            'pregnants' => $pregnants,
+            'vaccinatedTotal' => $vaccinatedTotal,
+            'totalBabies' =>$totalBabies
         ]);
     }
 }

@@ -74,35 +74,43 @@
                 <div class="card mb-0">
                     <label class="block text-muted-color font-medium mb-4">Age</label>
                     <div class="card flex justify-center h-auto">
-                        <Chart type="bar" :data="ageChart" :options="ageOptions" :plugins="plugins" class="w-full"  />
+                        <Chart type="bar" :data="ageChart" :options="ageOptions" :plugins="plugins" class="w-full" />
                     </div>
-                   
+
                 </div>
                 <div class="card mb-0 mt-4">
                     <label class="block text-muted-color font-medium mb-4">Maintenance</label>
                     <div class="card flex justify-center h-auto">
-                        <Chart type="bar" :data="maintenanceChart" :options="maintenanceChartOptions" :plugins="plugins" class="w-full" />
+                        <Chart type="bar" :data="maintenanceChart" :options="maintenanceChartOptions" :plugins="plugins"
+                            class="w-full" />
                     </div>
-                   
+
                 </div>
                 <div class="card mb-0 mt-4 ">
                     <label class="block text-muted-color font-medium mb-4">Health Status</label>
                     <div class="card flex justify-center h-auto">
                         <Chart type="bar" :data="healthStatusChart" :options="healthStatusChartOptions"
-                        :plugins="plugins" class="w-full"  />
+                            :plugins="plugins" class="w-full" />
                     </div>
-                   
+
                 </div>
             </div>
             <div class="md:col-span-4 col-span-12">
                 <div class="card mb-0">
+                    <label class="block text-muted-color font-medium mb-4">Babies Vaccination</label>
+                  
+                        <Chart type="doughnut" :data="vaccinatedBabiesChart" :options="vaccinatedBabiesChartOptions"
+                            :plugins="plugins" class="w-full" />
+                 
+                </div>
+                <div class="card mb-0 mt-4">
                     <label class="block text-muted-color font-medium mb-4">Pregnancy</label>
-                    
+
                     <Chart type="doughnut" :data="pregnancyChart" :options="pregnancyChartOptions" :plugins="plugins" />
                 </div>
                 <div class="card mb-0 mt-4">
                     <label class="block text-muted-color font-medium mb-4">Gender</label>
-                    
+
                     <Chart type="doughnut" :data="genderChart" :options="genderOptions" :plugins="plugins" />
                 </div>
                 <div class="card mb-0 mt-4">
@@ -166,6 +174,11 @@ const counts = ref({
 })
 const isLoading = ref(true)
 const plugins = [ChartDataLabels]
+const vaccinatedTotal = ref(0)
+const totalBabies = ref(0)
+
+const vaccinatedBabiesChart = ref()
+const vaccinatedBabiesChartOptions = ref()
 onMounted(async () => {
     await getCounts()
     await getCountsByAgeGroup()
@@ -176,10 +189,17 @@ onMounted(async () => {
     maintenanceChart.value = setBarChartData(true, 'Maintenance', maintenanceDatas.value.labels, maintenanceDatas.value.data)
     maintenanceChartOptions.value = setBarChartOptions()
 
+    
     healthStatusChart.value = setBarChartData(true, 'Health Status', healthStatusDatas.value.labels, healthStatusDatas.value.data)
     healthStatusChartOptions.value = setBarChartOptions()
 
-    Object.entries(genderCounts.value).forEach((key, value) => console.log(key[1]))
+    // Object.entries(genderCounts.value).forEach((key, value) => console.log(key[1]))
+    
+    
+    vaccinatedBabiesChart.value = setDoughnutData(['Vaccinated', 'Not Vaccinated'], [vaccinatedTotal.value, totalBabies.value - vaccinatedTotal.value],  ['#00FFAB', '#92B4EC'])
+    vaccinatedBabiesChartOptions.value = setDoughnutOptions()
+
+
     genderChart.value = setDoughnutData(Object.entries(genderCounts.value).map((key, value) => key[0]), Object.entries(genderCounts.value).map((key, value) => key[1]), ['#00FFAB', '#92B4EC'])
     genderOptions.value = setDoughnutOptions()
 
@@ -204,6 +224,8 @@ async function getCountsByAgeGroup() {
         genderCounts.value = response.data.genders
         bmiTeenCounts.value = response.data.bmiTeenagers
         bmiAdultCounts.value = response.data.bmiAdults
+        vaccinatedTotal.value = response.data.vaccinatedTotal
+        totalBabies.value = response.data.totalBabies
 
         response.data.maintenance.forEach(el => {
             maintenanceDatas.value.labels.push(el.maintenance)
