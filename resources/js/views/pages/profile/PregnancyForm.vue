@@ -46,6 +46,7 @@
                         <label for="">Pregnant GP</label>
                         <InputNumber class="w-full" v-model="pregnancyInfo.gp" />
                     </div>
+                    
                 </div>
                 <Button :label="!updatePregnancyOrNot ? 'SUBMIT' : 'UPDATE'" type="submit" class="w-full mt-2" />
             </form>

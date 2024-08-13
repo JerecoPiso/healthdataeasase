@@ -28,8 +28,10 @@ export const setBarChartOptions = () => {
     const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
     const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
     return {
+        responsive: true,
         plugins: {
             legend: {
+                display: false,  // Hides the legend labels,
                 labels: {
                     color: textColor
                 }
@@ -56,11 +58,6 @@ export const setBarChartOptions = () => {
                 }
             },
             
-        },
-        plugins: {
-            legend: {
-                display: false  // Hides the legend labels
-            }
         }
     };
 }

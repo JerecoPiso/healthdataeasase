@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\HealthProfile;
 use Illuminate\Support\Facades\DB;
 use App\Models\AuditTrail;
+use Carbon\Carbon;
 
 class PersonalProfileController extends Controller
 {
@@ -27,6 +28,17 @@ class PersonalProfileController extends Controller
         }
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'archivePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
+    }
+    public function getBabies(){
+        try {
+            $babies = PersonalProfile::where('birthdate','>=', Carbon::now()->subMonths(12)->format('Y-m-d'))
+                ->where("archive", 0)
+                ->orderBy('lastname', 'asc')
+                ->get();
+            return response()->json(['message' => 'Successful', 'status' => 'success', 'babies' => $babies], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
     }
     public function getFemales(Request $request)
     {
@@ -107,7 +119,6 @@ class PersonalProfileController extends Controller
         AuditTrail::createAuditTrail($request->user()->id, 0, 'personal_profiles', 'insertPersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
-  
     public function updatePersonalProfile(Request $request)
     {
         $request->validate([

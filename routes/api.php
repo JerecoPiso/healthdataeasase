@@ -11,16 +11,14 @@ use App\Http\Controllers\PregnancyFormProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->controller(AuthController::class)->group(function () {
-    Route::post('register', 'register');
     Route::post('login', 'login');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
+    Route::post('register', 'register');
 
+    Route::delete('archiveUser/{id}', 'archiveUser');
+    Route::post('changePassword', 'changePassword')->middleware('auth:sanctum');
     Route::post('getUsers', 'getUsers')->middleware('auth:sanctum');
     Route::post('updateUser', 'updateUser')->middleware('auth:sanctum');
-    Route::post('changePassword', 'changePassword')->middleware('auth:sanctum');
-    Route::delete('archiveUser/{id}', 'archiveUser');
-
-    
 });
 
 Route::prefix('dashboard')->middleware('auth:sanctum')->controller(DashboardController::class)->group(function () {
@@ -28,34 +26,33 @@ Route::prefix('dashboard')->middleware('auth:sanctum')->controller(DashboardCont
     Route::get('getCountsByAgeGroup', 'getCountsByAgeGroup');
 });
 Route::prefix('personalprofile')->middleware('auth:sanctum')->controller(PersonalProfileController::class)->group(function () {
-    Route::post('insertPersonalProfile', 'insertPersonalProfile');
+    Route::delete('archivePersonalProfile/{id}', 'archivePersonalProfile');
     Route::post('getPersonalProfile', 'getPersonalProfile');
     Route::post('getFemales', 'getFemales');
+    Route::get('getBabies', 'getBabies');
+    Route::post('insertPersonalProfile', 'insertPersonalProfile');
     Route::post('updatePersonalProfile', 'updatePersonalProfile');
-  
-    Route::delete('archivePersonalProfile/{id}', 'archivePersonalProfile');
 });
 Route::prefix('household')->middleware('auth:sanctum')->controller(HouseholdProfileController::class)->group(function () {
-    Route::post('insertHousehold', 'insertHousehold');
+    Route::delete('archiveHouseholdProfile/{id}', 'archiveHouseholdProfile');
     Route::post('changeHouseholdHead', 'changeHouseholdHead');
     Route::post('getHousehold', 'getHousehold');
     Route::post('getHouseHoldNumber', 'getHouseHoldNumber');
-    
+    Route::post('insertHousehold', 'insertHousehold');
     Route::post('separateHousehold', 'separateHousehold');
     Route::post('updateHousehold', 'updateHousehold');
-    Route::delete('archiveHouseholdProfile/{id}', 'archiveHouseholdProfile');
 });
 Route::prefix('healthprofile')->middleware('auth:sanctum')->controller(HealthProfileController::class)->group(function () {
-    Route::post('updateHealthProfile', 'updateHealthProfile');
-    
     Route::delete('archiveHealthProfile/{id}', 'archiveHealthProfile');
+    Route::post('getVaccinations', 'getVaccinations');
+    Route::post('saveVaccination', 'saveVaccination');
+    Route::post('updateHealthProfile', 'updateHealthProfile');
 });
 Route::prefix('pregnancy')->middleware('auth:sanctum')->controller(PregnancyFormProfileController::class)->group(function () {
+    Route::delete('archivePregnancy/{id}', 'archivePregnancy');
     Route::post('getPregnancies', 'getPregnancies');
     Route::post('insertPregnancy', 'insertPregnancy');
     Route::post('updatePregnancy', 'updatePregnancy');
-
-    Route::delete('archivePregnancy/{id}', 'archivePregnancy');
 });
 // Route::get('/user', function (Request $request) {
 //     return $request->user();

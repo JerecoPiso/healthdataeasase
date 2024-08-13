@@ -18,7 +18,19 @@ export const calculateBMI = (weightInKG, heightInCM) => {
     // Calculate BMI using the formula
     return ((weightInKG / (heightInMeters * heightInMeters)).toFixed(2)) || 0;
 }
+export const convertDateTimeString = (_date) => {
+    const date = new Date(_date);
+  // Get the components for local time
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
 
+  // Combine into the desired format
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
 export const calculateAge = (bdate) => {
 

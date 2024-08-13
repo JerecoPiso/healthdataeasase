@@ -576,7 +576,7 @@ function clearVariables() {
         householdInfo.value[key] = ''
     }
     for (const key in healthInfo.value) {
-        if (typeof profileInfo.value[key] === 'string') {
+        if (typeof healthInfo.value[key] === 'string') {
             healthInfo.value[key] = ''
         } else {
             healthInfo.value[key] = 0

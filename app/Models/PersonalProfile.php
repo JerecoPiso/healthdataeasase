@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PersonalProfile extends Model
 {
@@ -28,6 +29,11 @@ class PersonalProfile extends Model
     public function householdProfiles(): BelongsTo
     {
         return $this->belongsTo(HouseholdProfile::class);
+    }
+
+    public function vaccinations(): HasMany
+    {
+        return $this->hasMany(Vaccination::class);
     }
     public function scopePersonalProfileWithHealthProfile($query, $request)
     {
