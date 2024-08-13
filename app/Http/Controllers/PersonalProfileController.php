@@ -29,9 +29,10 @@ class PersonalProfileController extends Controller
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'archivePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
-    public function getBabies(){
+    public function getBabies()
+    {
         try {
-            $babies = PersonalProfile::where('birthdate','>=', Carbon::now()->subMonths(12)->format('Y-m-d'))
+            $babies = PersonalProfile::where('birthdate', '>=', Carbon::now()->subMonths(12)->format('Y-m-d'))
                 ->where("archive", 0)
                 ->orderBy('lastname', 'asc')
                 ->get();
@@ -45,11 +46,11 @@ class PersonalProfileController extends Controller
         try {
             $females = PersonalProfile::where('archive', 0)
                 ->where("sex", 'Female')
-                ->whereNotExists(function ($query) {
-                    $query->select(DB::raw(1))
-                        ->from('pregnancy_form_profiles')
-                        ->whereColumn('pregnancy_form_profiles.personal_profile_id', 'personal_profiles.id');
-                })
+                // ->whereNotExists(function ($query) {
+                //     $query->select(DB::raw(1))
+                //         ->from('pregnancy_form_profiles')
+                //         ->whereColumn('pregnancy_form_profiles.personal_profile_id', 'personal_profiles.id');
+                // })
                 ->orderBy('lastname', 'asc')
                 ->get();
             return response()->json(['message' => 'Successful', 'status' => 'success', 'females' => $females], 201);
@@ -68,6 +69,7 @@ class PersonalProfileController extends Controller
     }
     public function insertPersonalProfile(Request $request)
     {
+        $id = 0;
         $request->validate([
             'lastname' => ['required'],
             'firstname' => ['required'],
@@ -109,6 +111,7 @@ class PersonalProfileController extends Controller
                 "health_status" => $request->health_status,
             ]);
             if ($profile) {
+                $id = $profile->id;
                 $this->response = ['message' => 'Registration successful', 'status' => 'success', 'user' => $profile, 'statusCode' => 201];
             } else {
                 $this->response = ['message' => 'Registration failed', 'status' => 'error', 'statusCode' => 403];
@@ -116,7 +119,7 @@ class PersonalProfileController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
-        AuditTrail::createAuditTrail($request->user()->id, 0, 'personal_profiles', 'insertPersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        AuditTrail::createAuditTrail($request->user()->id,  $id, 'personal_profiles', 'insertPersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
     public function updatePersonalProfile(Request $request)
@@ -130,6 +133,7 @@ class PersonalProfileController extends Controller
             'educational_attainment' => ['required'],
             'work' => ['required'],
             'relation_ship_to_head' => ['required'],
+            'status' => ['required'],
         ]);
         try {
             $profile = PersonalProfile::where('id', $request->id)
@@ -144,6 +148,7 @@ class PersonalProfileController extends Controller
                     'work' => $request->work,
                     'relation_ship_to_head' => $request->relation_ship_to_head,
                     'phone_number' => $request->phone_number,
+                    'status' => $request->status,
                 ]);
 
             if ($profile) {

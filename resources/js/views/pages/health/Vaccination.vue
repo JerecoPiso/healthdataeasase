@@ -5,7 +5,7 @@
 
         <Dialog v-model:visible="addUpdateModalVisible" maximizable modal header="Vaccination" position="top"
             class="md:w-2/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <form @submit.prevent="saveVaccination()">
+            <form @submit.prevent="!updateVaccinationOrNot ? saveVaccination() : updateVaccination()">
                 <label for="" v-if="!updateVaccinationOrNot">Select baby</label>
                 <Select v-if="!updateVaccinationOrNot" v-model="babyInfo.personal_profile_id" :options="babies"
                     optionValue="id" filter optionLabel="lastname" placeholder="Select" class="w-full">
@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <label for="">Remarks</label>
-                <Textarea rows="2" class="w-full" />
+                <Textarea rows="2"  v-model="babyInfo.remarks" class="w-full" />
 
                 <Button :label="!updateVaccinationOrNot ? 'SUBMIT' : 'UPDATE'" type="submit" class="w-full mt-2" />
             </form>
@@ -46,8 +46,7 @@
             <template #header>
                 <div class="flex justify-between">
                     <div>
-                        <Button label="Show" class="w-[4em]"
-                            @click="addUpdateModalVisible = true"><v-icon
+                        <Button label="Show" class="w-[4em]" @click="addUpdateModalVisible = true"><v-icon
                                 name="co-baby" scale="1.2"></v-icon></Button>
                     </div>
                     <div class="flex flex-wrap justify-end gap-2">
@@ -82,13 +81,10 @@
                                 <button type="button"
                                     @click="updateVaccinationOrNot = true, setForUpdateVaccination(slotProp.data), addUpdateModalVisible = true"
                                     class="bg-sky-500 text-white py-1 px-2 rounded-sm"
-                                    v-tooltip.top="'Update vaccination'"><v-icon
-                                        name="co-baby"></v-icon></button>
-                                <button type="button"
-                                    @click="confirmArchive(slotProp.data.id)"
+                                    v-tooltip.top="'Update vaccination'"><v-icon name="co-baby"></v-icon></button>
+                                <button type="button" @click="confirmArchive(slotProp.data.id)"
                                     class="ml-1 bg-red-500 text-white py-1 px-2 rounded-sm"
-                                    v-tooltip.top="'Archive'"><v-icon
-                                        name="bi-trash"></v-icon></button>
+                                    v-tooltip.top="'Archive'"><v-icon name="bi-trash"></v-icon></button>
                             </template>
                         </Column>
                     </DataTable>
@@ -102,7 +98,7 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { convertDateTimeString } from '@/service/Calculations.js'
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
@@ -137,6 +133,15 @@ const expandAll = () => {
 const collapseAll = () => {
     expandedRows.value = null;
 };
+watch(
+    () => addUpdateModalVisible.value,
+    () => {
+        if (!addUpdateModalVisible.value) {
+            clearVariables()
+            updateVaccinationOrNot.value = false
+        }
+    }
+)
 onMounted(async () => {
     await getVaccinations()
     await getBabies()
@@ -156,14 +161,14 @@ function confirmArchive(id) {
             label: 'Save'
         },
         accept: async () => {
-            alert(id)
-            // const response = await window.axios.delete(`${window.baseurl}api/household/archiveHouseholdProfile/${id}`, {
-            //     headers: {
-            //         'Authorization': `Bearer ${VueCookies.get('token')}`
-            //     }
-            // })
-            // await getHousehold()
-            // toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
+            // alert(id)
+            const response = await window.axios.delete(`${window.baseurl}api/healthprofile/archiveVaccination/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            await getVaccinations()
+            toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
         },
         reject: () => {
             toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
@@ -206,14 +211,13 @@ async function getVaccinations() {
             }
         });
         vaccinations.value = response.data.vaccinations
-        console.log(response.data)
+        // console.log(response.data)
     } catch (err) {
         console.log(err)
     }
 }
 async function saveVaccination() {
     try {
-        // console.log(babyInfo.value.vaccination_datetime)
         if (babyInfo.value.personal_profile_id > 0) {
             if (vaccination_datetime.value) {
                 babyInfo.value.vaccination_datetime = convertDateTimeString(vaccination_datetime.value)
@@ -224,6 +228,7 @@ async function saveVaccination() {
                     }
                 })
                 addUpdateModalVisible.value = false
+                await getVaccinations()
                 clearVariables()
                 toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
 
@@ -233,6 +238,30 @@ async function saveVaccination() {
         } else {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Please select a baby!', life: 3000 });
         }
+    } catch (err) {
+        console.log(err)
+    }
+}
+async function updateVaccination() {
+    try {
+        console.log(babyInfo.value)
+        if (vaccination_datetime.value) {
+            babyInfo.value.vaccination_datetime = convertDateTimeString(vaccination_datetime.value)
+
+            const response = await window.axios.post(`${window.baseurl}api/healthprofile/updateVaccination`, babyInfo.value, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            addUpdateModalVisible.value = false
+            await getVaccinations()
+            // clearVariables()
+            toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
+
+        } else {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Vaccination date is required!', life: 3000 });
+        }
+
     } catch (err) {
         console.log(err)
     }
@@ -247,6 +276,7 @@ function clearVariables() {
     }
 }
 function setForUpdateVaccination(_vaccination) {
+  
     for (const key in babyInfo.value) {
         babyInfo.value[key] = _vaccination[key]
     }

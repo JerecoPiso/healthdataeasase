@@ -15,19 +15,19 @@ class HealthProfileController extends Controller
     {
         $this->response = [];
     }
-    // public function archiveVaccination(Request $request)
-    // {
-    //     try {
-    //         Vaccination::where('id', $request->id)->update([
-    //             'archive' => 1,
-    //         ]);
-    //         $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
-    //     } catch (\Illuminate\Database\QueryException $e) {
-    //         $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
-    //     }
-    //     AuditTrail::createAuditTrail($request->user()->id, $request->id, 'household_profiles', 'archiveHouseholdProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
-    //     return response()->json($this->response, $this->response['statusCode']);
-    // }
+    public function archiveVaccination(Request $request)
+    {
+        try {
+            Vaccination::where('id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'vaccinations', 'archiveVaccination', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
     public function archiveHealthProfile(Request $request)
     {
         try {
@@ -43,11 +43,12 @@ class HealthProfileController extends Controller
     }
     public function getVaccinations(Request $request){
         try {
-            $vaccinations = PersonalProfile::has('vaccinations')->with('vaccinations',)
+            $vaccinations = PersonalProfile::has('vaccinations')->with(['vaccinations' => function($query) use ($request)  {
+                $query->where('vaccinations.archive', 0);
+            }])
             ->where(function ($query) use ($request) {
                 $query->where('lastname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('firstname', 'LIKE', '%' . $request->search . '%');
-    
             })
             ->where('archive', 0);
             $totalBabies = $vaccinations->count();
@@ -63,7 +64,8 @@ class HealthProfileController extends Controller
         return response()->json(['vaccinations' => $vaccinations]);
     }
     public function saveVaccination(Request $request)
-    {
+    {    
+        $id = 0;
         $request->validate([
             'personal_profile_id' => ['required'],
             'vaccine' => ['required'],
@@ -71,7 +73,6 @@ class HealthProfileController extends Controller
             'vaccination_datetime' => ['required'],
         ]);
         try {
-
             $vaccination = Vaccination::create([
                 "personal_profile_id" => $request->personal_profile_id,
                 "vaccine" => $request->vaccine,
@@ -81,6 +82,7 @@ class HealthProfileController extends Controller
                 "remarks" => $request->remarks
             ]);
             if ($vaccination) {
+                $id = $vaccination->id;
                 $this->response = ['message' => 'Registration successful', 'status' => 'success', 'vaccination' => $vaccination, 'statusCode' => 201];
             } else {
                 $this->response = ['message' => 'Registration failed', 'status' => 'error', 'statusCode' => 403];
@@ -88,7 +90,7 @@ class HealthProfileController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
-        AuditTrail::createAuditTrail($request->user()->id, 0, 'vaccinations', 'saveVaccination', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        AuditTrail::createAuditTrail($request->user()->id, $id, 'vaccinations', 'saveVaccination', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
     public function updateHealthProfile(Request $request)
@@ -113,6 +115,34 @@ class HealthProfileController extends Controller
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
         AuditTrail::createAuditTrail($request->user()->id, $request->health_id, 'health_profiles', 'updateHealthProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
+    public function updateVaccination(Request $request)
+    {   
+        $request->validate([
+            'id' => ['required'],
+            'vaccine' => ['required'],
+            'vaccinator' => ['required'],
+            'vaccination_datetime' => ['required'],
+        ]);
+        try {
+            $health = Vaccination::where('id', $request->id)
+                ->update([
+                    'vaccine' => $request->vaccine,
+                    'vaccinator' => $request->vaccinator,
+                    'dose' => $request->dose,
+                    'vaccination_datetime' => $request->vaccination_datetime,
+                    'remarks' => $request->remarks
+                ]);
+            if ($health) {
+                $this->response = ['message' => 'Updated successfully', 'status' => 'success', 'health' => $health, 'statusCode' => 201];
+            } else {
+                $this->response = ['message' => 'Update failed', 'status' => 'error', 'statusCode' => 403];
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'vaccinations', 'updateVaccination', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
 }

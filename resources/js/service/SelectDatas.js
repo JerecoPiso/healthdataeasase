@@ -57,13 +57,24 @@ export const maintenance = [
     { name: 'Other(specify)' },
     { name: 'None' }
 ]
-
 export const nhts = [
     { name: '4P’S (Pantawid Pamilyang Pilipino Program)' },
     { name: 'MCCT (Modified Conditional Cash Transfer)' },
     { name: 'UCT (Unconditional Cash Transfer)' },
     { name: 'Non-NHTS' },
     { name: 'None' },
+]
+export const profile_status = [
+    { name: 'Active' },
+    { name: 'Deceased' },
+    { name: 'Move to another place' },
+    { name: 'Others' }
+]
+export const pregnancy_status = [
+    { name: 'Active' },
+    { name: 'Delivered' },
+    { name: 'Abort' },
+    { name: 'Others' }
 ]
 export const relationship_to_head = [
     { name: 'Household Head' },

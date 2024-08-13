@@ -58,6 +58,11 @@
                         <Select v-model="profileInfo.relation_ship_to_head" optionValue="name"
                             :options="relationship_to_head" editable optionLabel="name" class="w-full " />
                     </div>
+                    <div class="md:col-span-1 col-span-3">
+                        <label for="">Status</label>
+                        <Select v-model="profileInfo.status" optionValue="name"
+                            :options="profile_status"  optionLabel="name" class="w-full " />
+                    </div>
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" />
             </form>
@@ -99,6 +104,7 @@
                         <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
                             optionLabel="name" class="w-full " :disabled="viewHealthInfoOnly" />
                     </div>
+                  
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" v-if="!viewHealthInfoOnly" />
             </form>
@@ -131,6 +137,7 @@
             <Column field="work" sortable header="Work"></Column>
             <Column field="health_status" sortable header="Health Status"></Column>
             <Column field="maintenance" sortable header="Maintenance"></Column>
+            <Column field="status" sortable header="Status"></Column>
             <Column header="Action" class="min-w-52">
                 <template #body="slotProps">
                     <button type="button"
@@ -162,7 +169,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { calculateBMI } from '@/service/Calculations.js'
-import { civil_status, blood_type, educational_attainment, health_status, maintenance, relationship_to_head, sex, work } from '@/service/SelectDatas.js'
+import { civil_status, blood_type, educational_attainment, health_status, maintenance, relationship_to_head, sex, work, profile_status } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const confirm = useConfirm();
 const editPersonalProfileModal = ref(false)
@@ -192,7 +199,8 @@ const profileInfo = ref({
     educational_attainment: '',
     work: '',
     relation_ship_to_head: '',
-    phone_number: ''
+    phone_number: '',
+    status: ''
 })
 const profiles = ref([])
 const search = ref('')

@@ -42,14 +42,19 @@ class PregnancyFormProfileController extends Controller
             $pregnanciesPage = $pregnancies->orderBy('profile.lastname', 'asc')
                 ->skip((intval($request->page) - 1) * ($totalPregnancies > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
                 ->take(intval($request->recordPerPage))
-                ->get();
+                ->get(
+                    ['profile.*', 'pregnancy_form_profiles.id as pregnancy_id', 'pregnancy_form_profiles.post_partum', 'pregnancy_form_profiles.family_planning',
+                    'pregnancy_form_profiles.type_of_delivery','pregnancy_form_profiles.lmp','pregnancy_form_profiles.edc','pregnancy_form_profiles.gp',
+                    'pregnancy_form_profiles.status as pregnancy_status', 'pregnancy_form_profiles.personal_profile_id',
+                    ]);
             return response()->json(['message' => 'Successful', 'status' => 'success', 'pregnancies' => $pregnanciesPage, 'count' => $totalPregnancies], 201);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
     public function insertPregnancy(Request $request)
-    {
+    {   
+        $id = 0;
         $request->validate([
             'personal_profile_id' => ['required'],
             'post_partum' => ['required'],
@@ -60,7 +65,7 @@ class PregnancyFormProfileController extends Controller
             'gp' => ['required'],
         ]);
         try {
-            PregnancyFormProfile::create([
+            $pregnancy = PregnancyFormProfile::create([
                 'personal_profile_id' => $request->personal_profile_id,
                 'post_partum' => $request->post_partum,
                 'family_planning' => $request->family_planning,
@@ -68,12 +73,15 @@ class PregnancyFormProfileController extends Controller
                 'lmp' => $request->lmp,
                 'edc' => $request->edc,
                 'gp' => $request->gp,
+                'status' => $request->status,
             ]);
+            $id = $pregnancy->id;
+
             $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
         } catch (\Illuminate\Database\QueryException $e) {
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
-        AuditTrail::createAuditTrail($request->user()->id, 0, 'pregnancy_form_profiles', 'insertPregnancy', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        AuditTrail::createAuditTrail($request->user()->id, $id, 'pregnancy_form_profiles', 'insertPregnancy', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
     public function updatePregnancy(Request $request)
@@ -88,14 +96,15 @@ class PregnancyFormProfileController extends Controller
             'gp' => ['required'],
         ]);
         try {
-            $pregnancy = PregnancyFormProfile::where('id', $request->id)->update([
-                'personal_profile_id' => $request->personal_profile_id,
+            $pregnancy = PregnancyFormProfile::where('id', $request->pregnancy_id)->update([
+                // 'personal_profile_id' => $request->personal_profile_id,
                 'post_partum' => $request->post_partum,
                 'family_planning' => $request->family_planning,
                 'type_of_delivery' => $request->type_of_delivery,
                 'lmp' => $request->lmp,
                 'edc' => $request->edc,
                 'gp' => $request->gp,
+                'status' => $request->status,
             ]);
             if ($pregnancy) {
                 $this->response = ['message' => 'Updated successfully', 'status' => 'success', 'pregnancy' => $pregnancy, 'statusCode' => 201];

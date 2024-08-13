@@ -96,6 +96,11 @@
             </div>
             <div class="md:col-span-4 col-span-12">
                 <div class="card mb-0">
+                    <label class="block text-muted-color font-medium mb-4">Pregnancy</label>
+                    
+                    <Chart type="doughnut" :data="pregnancyChart" :options="pregnancyChartOptions" :plugins="plugins" />
+                </div>
+                <div class="card mb-0 mt-4">
                     <label class="block text-muted-color font-medium mb-4">Gender</label>
                     
                     <Chart type="doughnut" :data="genderChart" :options="genderOptions" :plugins="plugins" />
@@ -133,18 +138,25 @@ const genderChart = ref()
 const genderOptions = ref()
 const genderCounts = ref()
 
-const maintenanceChart = ref()
-const maintenanceChartOptions = ref()
-const maintenanceDatas = ref({
-    labels: [],
-    data: []
-})
 const healthStatusChart = ref()
 const healthStatusChartOptions = ref()
 const healthStatusDatas = ref({
     labels: [],
     data: []
 })
+const maintenanceChart = ref()
+const maintenanceChartOptions = ref()
+const maintenanceDatas = ref({
+    labels: [],
+    data: []
+})
+const pregnancyChart = ref()
+const pregnancyChartOptions = ref()
+const pregnancyDatas = ref({
+    labels: [],
+    data: []
+})
+
 const counts = ref({
     users: 0,
     household: 0,
@@ -176,6 +188,9 @@ onMounted(async () => {
 
     bmiAdultChart.value = setDoughnutData(Object.entries(bmiAdultCounts.value).map((key, value) => key[0]), Object.entries(bmiAdultCounts.value).map((key, value) => key[1]), ['#7286D3', '#8EA7E9', '#E5E0FF', '#FFF2F2'])
     bmiAdultChartOptions.value = setDoughnutOptions()
+
+    pregnancyChart.value = setDoughnutData(pregnancyDatas.value.labels, pregnancyDatas.value.data, ['#00A9FF', '#89CFF3', '#A0E9FF', '#CDF5FD'])
+    pregnancyChartOptions.value = setDoughnutOptions()
     isLoading.value = false
 });
 async function getCountsByAgeGroup() {
@@ -197,6 +212,10 @@ async function getCountsByAgeGroup() {
         response.data.health_status.forEach(el => {
             healthStatusDatas.value.labels.push(el.health_status)
             healthStatusDatas.value.data.push(el.total)
+        })
+        response.data.pregnants.forEach(el => {
+            pregnancyDatas.value.labels.push(el.status)
+            pregnancyDatas.value.data.push(el.total)
         })
         console.log(response.data)
     } catch (err) {

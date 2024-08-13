@@ -7,7 +7,7 @@
             class="md:w-3/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="!updatePregnancyOrNot ? insertPregnancy() : updatePregnancy()">
                 <label for="" v-if="!updatePregnancyOrNot">Select Pregnant</label>
-                <Select v-if="!updatePregnancyOrNot" v-model="pregnancyInfo.personal_profile_id"  :options="females"
+                <Select v-if="!updatePregnancyOrNot" v-model="pregnancyInfo.personal_profile_id" :options="females"
                     optionValue="id" filter optionLabel="lastname" placeholder="Select" class="w-full">
                     <template #option="slotProps">
                         <div class="flex items-center">
@@ -17,7 +17,7 @@
                         </div>
                     </template>
                 </Select>
-                <div class="grid grid-cols-3 gap-2 mt-1">
+                <div class="grid grid-cols-3 gap-2 mt-1 mb-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Post-Partum</label>
                         <InputNumber class="w-full" v-model="pregnancyInfo.post_partum" />
@@ -46,8 +46,11 @@
                         <label for="">Pregnant GP</label>
                         <InputNumber class="w-full" v-model="pregnancyInfo.gp" />
                     </div>
-                    
+
                 </div>
+                <label for="">Status</label>
+                <Select v-model="pregnancyInfo.status" optionValue="name" :options="pregnancy_status" optionLabel="name"
+                    placeholder="Select status" class="w-full " />
                 <Button :label="!updatePregnancyOrNot ? 'SUBMIT' : 'UPDATE'" type="submit" class="w-full mt-2" />
             </form>
 
@@ -78,15 +81,15 @@
             <Column field="lmp" header="LMP (Last Menstrual Period)"></Column>
             <Column field="edc" header="EDC (Estimated Date of Confinement)"></Column>
             <Column field="gp" header="GP (Gravida/Para)"></Column>
+            <Column field="pregnancy_status" header="Status"></Column>
             <Column header="Action" class="min-w-48">
                 <template #body="slotProps">
-
                     <button type="button"
                         @click="setForUpdatePregnancy(slotProps.data), updatePregnancyOrNot = true, addUpdateModalVisible = true"
                         class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Update'"><v-icon
                             name="fa-edit"></v-icon></button>
 
-                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
+                    <button type="button" @click="id = slotProps.data.pregnancy_id, confirmArchive()"
                         class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
                             name="bi-trash"></v-icon></button>
                 </template>
@@ -103,7 +106,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import { calculateEDC } from '@/service/Calculations.js'
-import { family_planning, type_of_delivery } from '@/service/SelectDatas.js'
+import { family_planning, type_of_delivery, pregnancy_status } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const addUpdateModalVisible = ref(false)
 const confirm = useConfirm();
@@ -113,14 +116,15 @@ const id = ref(0)
 const paginator = ref(null)
 const pregnancies = ref([])
 const pregnancyInfo = ref({
-    id: '',
+    pregnancy_id: '',
     personal_profile_id: '',
     post_partum: 0,
     family_planning: '',
     type_of_delivery: '',
     lmp: '',
     edc: '',
-    gp: 0
+    gp: 0,
+    status: ''
 })
 const search = ref('')
 const toast = useToast();

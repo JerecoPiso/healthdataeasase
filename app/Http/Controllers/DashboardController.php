@@ -46,6 +46,10 @@ class DashboardController extends Controller
             ->where('archive', 0)
             ->groupBy('health_status')
             ->get();
+        $pregnants = PregnancyFormProfile::select('status', DB::raw('count(*) as total'))
+            ->where('archive', 0)
+            ->groupBy('status')
+            ->get();
 
         $ageGroups = PersonalProfile::select(
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 6 THEN 1 ELSE 0 END), 0) AS UNSIGNED) as age_0_6'),
@@ -83,7 +87,8 @@ class DashboardController extends Controller
             'bmiTeenagers' =>  $bmiGroupsTeenager,
             'bmiAdults' => $bmiGroupsAdults,
             'maintenance' => $maintenance,
-            'health_status' => $health_status
+            'health_status' => $health_status,
+            'pregnants' => $pregnants
         ]);
     }
 }

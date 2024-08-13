@@ -44,9 +44,11 @@ Route::prefix('household')->middleware('auth:sanctum')->controller(HouseholdProf
 });
 Route::prefix('healthprofile')->middleware('auth:sanctum')->controller(HealthProfileController::class)->group(function () {
     Route::delete('archiveHealthProfile/{id}', 'archiveHealthProfile');
+    Route::delete('archiveVaccination/{id}', 'archiveVaccination');
     Route::post('getVaccinations', 'getVaccinations');
     Route::post('saveVaccination', 'saveVaccination');
     Route::post('updateHealthProfile', 'updateHealthProfile');
+    Route::post('updateVaccination', 'updateVaccination');
 });
 Route::prefix('pregnancy')->middleware('auth:sanctum')->controller(PregnancyFormProfileController::class)->group(function () {
     Route::delete('archivePregnancy/{id}', 'archivePregnancy');

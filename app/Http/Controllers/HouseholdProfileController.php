@@ -98,7 +98,8 @@ class HouseholdProfileController extends Controller
         }
     }
     public function insertHousehold(Request $request)
-    {
+    {   
+        $id = 0;
         $request->validate([
             'lastname' => ['required'],
             'firstname' => ['required'],
@@ -154,6 +155,7 @@ class HouseholdProfileController extends Controller
                 'personal_profile_id' =>  $profile->id
             ]);
             if ($household && $profile) {
+                $id = $household->id;
                 $this->response = ['message' => 'Registration successful', 'status' => 'success', 'household' => $household, 'statusCode' => 201];
             } else {
                 $this->response = ['message' => 'Registration failed', 'status' => 'error', 'statusCode' => 403];
@@ -161,7 +163,7 @@ class HouseholdProfileController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 403];
         }
-        AuditTrail::createAuditTrail($request->user()->id, 0, 'household_profiles', 'insertHousehold', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        AuditTrail::createAuditTrail($request->user()->id, $id, 'household_profiles', 'insertHousehold', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
     public function separateHousehold(Request $request)
