@@ -44,14 +44,17 @@ const router = createRouter({
                     name: 'pregnancy',
                     component: () => import('@/views/pages/profile/PregnancyForm.vue')
                 },
-
+                // admin
                 {
                     path: '/healthdataeasase/public/administrator/users',
                     name: 'users',
                     component: () => import('@/views/pages/administrator/Users.vue')
                 },
-
-
+                {
+                    path: '/healthdataeasase/public/administrator/reports',
+                    name: 'reports',
+                    component: () => import('@/views/pages/reports/index.vue')
+                },
 
                 // health
                 {
@@ -61,12 +64,17 @@ const router = createRouter({
                 },
             ]
         },
-       
-
         {
             path: '/healthdataeasase/public/auth/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
+        },
+
+          //reports
+          {
+            path: '/healthdataeasase/public/report/household',
+            name: 'householdreport',
+            component: () => import('@/views/pages/reports/household.vue')
         },
      
     ]

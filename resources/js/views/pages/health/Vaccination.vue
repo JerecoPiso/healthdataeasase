@@ -2,7 +2,6 @@
     <div class="card flex flex-col gap-4" v-if="!isLoading">
         <Toast />
         <ConfirmDialog></ConfirmDialog>
-
         <Dialog v-model:visible="addUpdateModalVisible" maximizable modal header="Vaccination" position="top"
             class="md:w-2/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="!updateVaccinationOrNot ? saveVaccination() : updateVaccination()">
