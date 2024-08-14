@@ -76,7 +76,7 @@ class AuthController extends Controller
             'username' => ['required', 'max:45'],
             'password' => ['required'],
         ]);
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('username', $request->username)->where('archive', 0)->first();
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken($request->username)->plainTextToken;
