@@ -1,6 +1,6 @@
 <script setup>
 import {  useLayout } from '@/layout/composables/layout';
-import { onMounted, computed, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
@@ -13,15 +13,7 @@ watch(isSidebarActive, (newVal) => {
         unbindOutsideClickListener();
     }
 });
-onMounted(() => {
-    if(localStorage.getItem('color-theme') == 'dark'){
-        // layoutConfig.darkTheme = !layoutConfig.darkTheme
-       // localStorage.setItem('color-theme', layoutConfig.darkTheme ? 'dark' : 'light');
-        document.documentElement.classList.toggle('app-dark');
-        //toggleDarkMode()
-    }
 
-})
 const containerClass = computed(() => {
     return {
         'layout-overlay': layoutConfig.menuMode === 'overlay',

@@ -69,13 +69,11 @@
 // import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 
 import VueCookies from 'vue-cookies';
-import { onMounted, ref } from 'vue';
+import {  ref } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { useRouter } from 'vue-router'
 // import {  useLayout } from '@/layout/composables/layout';
-
-// const { layoutConfig} = useLayout();
-
+// const { toggleDarkMode} = useLayout();
 const router = useRouter()
 // const checked = ref(false);
 const loggingIn = ref(false)
@@ -84,15 +82,7 @@ const user = ref({
     password: ''
 })
 const toast = useToast();
-// onMounted(() => {
-//     if(localStorage.getItem('color-theme') == 'dark'){
-//         layoutConfig.darkTheme = !layoutConfig.darkTheme
 
-//         document.documentElement.classList.toggle('app-dark');
-     
-//     }
-
-// })
 async function login() {
     loggingIn.value = true
     try {

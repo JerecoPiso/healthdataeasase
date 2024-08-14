@@ -44,7 +44,7 @@ class HealthProfileController extends Controller
     public function getVaccinations(Request $request){
         try {
             $vaccinations = PersonalProfile::has('vaccinations')->with(['vaccinations' => function($query) use ($request)  {
-                $query->where('vaccinations.archive', 0);
+                $query->where('vaccinations.archive',  0);
             }])
             ->where(function ($query) use ($request) {
                 $query->where('lastname', 'LIKE', '%' . $request->search . '%')

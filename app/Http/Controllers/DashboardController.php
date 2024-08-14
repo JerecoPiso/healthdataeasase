@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $household = HouseholdProfile::where('archive', 0)->get('id')->count();
         $personal = PersonalProfile::where('archive', 0)->get('id')->count();
         $health = HealthProfile::where('archive', 0)->get('id')->count();
-        $pregnancy = PregnancyFormProfile::where('archive', 0)->get('id')->count();
+        $pregnancy = PregnancyFormProfile::where('status', 'Active')->where('archive', 0)->get('id')->count();
         return response()->json(
             [
                 'counts' =>
@@ -40,11 +40,10 @@ class DashboardController extends Controller
     public function getCountsByAgeGroup(Request $request)
     {
 
-        $vaccinatedTotal = Vaccination::where('archive', 0)->distinct('personal_profile_id')->count('id');
-        $totalBabies = PersonalProfile::where('birthdate', '>=', Carbon::now()->subMonths(12)->format('Y-m-d'))
+        $vaccinatedTotal = Vaccination::leftJoin('personal_profiles as profile', 'vaccinations.personal_profile_id', '=', 'profile.id')->where('vaccinations.archive', 0)->distinct('vaccinations.id')->count('vaccinations.id');
+        $totalBabies = PersonalProfile::whereRaw('TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) <= ?', [1])
         ->where("archive", 0)
         ->get()->count();
-
         $maintenance = HealthProfile::select('maintenance', DB::raw('count(*) as total'))
             ->where('archive', 0)
             ->groupBy('maintenance')

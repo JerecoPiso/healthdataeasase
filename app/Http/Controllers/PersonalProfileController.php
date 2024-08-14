@@ -32,7 +32,7 @@ class PersonalProfileController extends Controller
     public function getBabies()
     {
         try {
-            $babies = PersonalProfile::where('birthdate', '>=', Carbon::now()->subMonths(12)->format('Y-m-d'))
+            $babies = PersonalProfile::whereRaw('TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) <= ?', [1])
                 ->where("archive", 0)
                 ->orderBy('lastname', 'asc')
                 ->get();
@@ -44,7 +44,8 @@ class PersonalProfileController extends Controller
     public function getFemales(Request $request)
     {
         try {
-            $females = PersonalProfile::where('archive', 0)
+            $females = PersonalProfile::whereRaw('TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) >= ?', [12])
+                ->where('archive', 0)
                 ->where("sex", 'Female')
                 // ->whereNotExists(function ($query) {
                 //     $query->select(DB::raw(1))

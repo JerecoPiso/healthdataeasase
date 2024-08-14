@@ -188,7 +188,8 @@ class HouseholdProfileController extends Controller
                         'toilet' => $request->toilet,
                     ]);
                     PersonalProfile::where('id', $request->personal_profile_id)->update([
-                        'household_profile_id' => $household->id
+                        'household_profile_id' => $household->id,
+                        'relation_ship_to_head' => 'Household Head'
                     ]);
                     if ($household) {
                         $this->response = ['message' => 'Created successfully', 'status' => 'success', 'statusCode' => 201];

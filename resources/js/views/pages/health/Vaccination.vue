@@ -244,7 +244,7 @@ async function saveVaccination() {
 }
 async function updateVaccination() {
     try {
-        console.log(babyInfo.value)
+        // console.log(babyInfo.value)
         if (vaccination_datetime.value) {
             babyInfo.value.vaccination_datetime = convertDateTimeString(vaccination_datetime.value)
 
@@ -274,11 +274,17 @@ function clearVariables() {
             babyInfo.value[key] = 0
         }
     }
+    vaccination_datetime.value = ''
 }
 function setForUpdateVaccination(_vaccination) {
   
     for (const key in babyInfo.value) {
-        babyInfo.value[key] = _vaccination[key]
+        if(key != 'vaccination_datetime'){
+            babyInfo.value[key] = _vaccination[key]
+        }else{
+            vaccination_datetime.value = _vaccination['vaccination_datetime']
+        }
+      
     }
 }
 </script>

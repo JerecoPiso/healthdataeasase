@@ -234,6 +234,7 @@
                         <Column field="sex" header="Sex"></Column>
                         <Column field="civil_status" header="Civil Status"></Column>
                         <Column field="relation_ship_to_head" header="Relationship to Head"></Column>
+                        <Column field="status" header="Status"></Column>
                         <Column header="Action">
                             <template #body="slotProp">
                                 <button type="button"
@@ -411,8 +412,9 @@ async function insertPersonalProfile() {
         })
         addModalVisible.value = false
         clearVariables()
+        await getHousehold()
         toast.add({ severity: 'success', summary: 'Success', detail: 'Saved successfully', life: 3000 });
-        router.push({ name: 'personal' })
+        // router.push({ name: 'personal' })
     } catch (err) {
 
         toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });

@@ -47,13 +47,14 @@ export function useLayout() {
 
             return;
         }
-
         document.startViewTransition(() => executeDarkModeToggle(event));
     };
 
     const executeDarkModeToggle = () => {
+       
         layoutConfig.darkTheme = !layoutConfig.darkTheme;
         localStorage.setItem('color-theme', layoutConfig.darkTheme ? 'dark' : 'light');
+
         document.documentElement.classList.toggle('app-dark');
     };
 

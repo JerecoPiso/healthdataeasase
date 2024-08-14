@@ -29,6 +29,10 @@
                         <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
+                        <label for="">Age</label>
+                        <InputText class="w-full" v-model="profileInfo.age" disabled />
+                    </div>
+                    <div class="md:col-span-1 col-span-3">
                         <label for="">Sex</label>
                         <Select v-model="profileInfo.sex" optionValue="name" :options="sex" optionLabel="name"
                             class="w-full " />
@@ -168,7 +172,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { calculateBMI } from '@/service/Calculations.js'
+import { calculateBMI, calculateAge } from '@/service/Calculations.js'
 import { civil_status, blood_type, educational_attainment, health_status, maintenance, relationship_to_head, sex, work, profile_status } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const confirm = useConfirm();
@@ -194,6 +198,7 @@ const profileInfo = ref({
     middlename: '',
     suffix: '',
     birthdate: '',
+    age: '',
     sex: '',
     civil_status: '',
     educational_attainment: '',
@@ -211,6 +216,12 @@ watch(
     () => healthInfo.value.weight,
     () => {
         healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
+    }
+)
+watch(
+    () => profileInfo.value.birthdate,
+    () => {
+        profileInfo.value.age = calculateAge(profileInfo.value.birthdate)
     }
 )
 onMounted(async () => {

@@ -91,13 +91,13 @@ export const calculateMonthsAfterBirthdate = (birthdate) => {
     if(totalMonths <= 3){
         ageCategory = 'Newborn'
     }else if(totalMonths > 3 && totalMonths <= 12){
-        ageCategory = 'Infants'
+        ageCategory = 'Infant'
     }else if(totalMonths > 12 && totalMonths <= 60){
         ageCategory = 'Toddler'
     }else if(totalMonths > 61 && totalMonths <= 84){
-        ageCategory = 'Kids'
+        ageCategory = 'Kid'
     }else if(totalMonths > 84){
-        ageCategory = 'Adults'
+        ageCategory = 'Adult'
     }
     return `${totalMonths} months ${ageCategory}`;
 }
