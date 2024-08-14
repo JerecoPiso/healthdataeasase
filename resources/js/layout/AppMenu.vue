@@ -67,11 +67,11 @@ const model = ref([
                 icon: 'fa-users-cog',
                 to: '/healthdataeasase/public/administrator/users'
             },
-            {
-                label: 'Reports',
-                icon: 'hi-document-report',
-                to: '/healthdataeasase/public/administrator/reports'
-            },
+            // {
+            //     label: 'Reports',
+            //     icon: 'hi-document-report',
+            //     to: '/healthdataeasase/public/administrator/reports'
+            // },
         ]
     },
 
