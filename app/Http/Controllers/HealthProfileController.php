@@ -15,6 +15,7 @@ class HealthProfileController extends Controller
     {
         $this->response = [];
     }
+    // archive vaccination
     public function archiveVaccination(Request $request)
     {
         try {
@@ -25,6 +26,7 @@ class HealthProfileController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
+        // audit logs
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'vaccinations', 'archiveVaccination', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }

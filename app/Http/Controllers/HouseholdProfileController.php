@@ -74,8 +74,6 @@ class HouseholdProfileController extends Controller
     {
         try {
             $households = HouseholdProfile::with(['personalProfiles' => function ($query) use ($request) {
-                // $query->where('personal_profiles.lastname', 'LIKE', '%' . $request->search . '%');
-
                 $query->where('personal_profiles.archive', 0);
             }])
                 ->where(function ($query) use ($request) {
@@ -86,7 +84,6 @@ class HouseholdProfileController extends Controller
                         ->orWhere('household_profiles.toilet', 'LIKE', '%' . $request->search . '%');
                 })
                 ->where('household_profiles.archive', 0);
-
             $totalHousehold = $households->count();
             $householdPage = $households->orderBy('household_profiles.id', 'desc')
                 ->skip((intval($request->page) - 1) * ($totalHousehold > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
@@ -108,7 +105,6 @@ class HouseholdProfileController extends Controller
             'civil_status' => ['required'],
             'educational_attainment' => ['required'],
             'work' => ['required'],
-            // 'household_profile_id' => ['required'],
             'relation_ship_to_head' => ['required'],
             'blood_type' => ['required'],
             'height' => ['required'],

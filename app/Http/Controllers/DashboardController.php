@@ -17,7 +17,8 @@ class DashboardController extends Controller
 {
     //
     public function getCounts(Request $request)
-    {
+    {   
+        // count of every values in a table that are not archive
         $users = User::where('archive', 0)->get('id')->count();
         $household = HouseholdProfile::where('archive', 0)->get('id')->count();
         $personal = PersonalProfile::where('archive', 0)->get('id')->count();
@@ -32,14 +33,12 @@ class DashboardController extends Controller
                     'personal' => $personal,
                     'health' => $health,
                     'pregnancy' => $pregnancy,
-                    // 'user' => $request->user()
                 ]
             ]
         );
     }
     public function getCountsByAgeGroup(Request $request)
     {
-
         $vaccinatedTotal = Vaccination::leftJoin('personal_profiles as profile', 'vaccinations.personal_profile_id', '=', 'profile.id')->where('vaccinations.archive', 0)->distinct('vaccinations.id')->count('vaccinations.id');
         $totalBabies = PersonalProfile::whereRaw('TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) <= ?', [1])
         ->where("archive", 0)
@@ -56,7 +55,7 @@ class DashboardController extends Controller
             ->where('archive', 0)
             ->groupBy('status')
             ->get();
-
+        // count age by range
         $ageGroups = PersonalProfile::select(
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 6 THEN 1 ELSE 0 END), 0) AS UNSIGNED) as age_0_6'),
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 18 THEN 1 ELSE 0 END), 0) AS UNSIGNED) as age_6_18'),
@@ -70,7 +69,6 @@ class DashboardController extends Controller
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, personal_profiles.birthdate, CURDATE()) BETWEEN 0 AND 18 AND hp.bmi BETWEEN 18.5 AND 24.9  THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Normal'),
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, personal_profiles.birthdate, CURDATE()) BETWEEN 0 AND 18 AND hp.bmi BETWEEN 25 AND 29.9  THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Overweight '),
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, personal_profiles.birthdate, CURDATE()) BETWEEN 0 AND 18 AND hp.bmi >= 30  THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Obesity'),
-
         )
             ->where('personal_profiles.archive', 0)
             ->first();
@@ -79,7 +77,6 @@ class DashboardController extends Controller
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, personal_profiles.birthdate, CURDATE()) > 18 AND 18 AND hp.bmi BETWEEN 18.5 AND 24.9  THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Normal'),
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, personal_profiles.birthdate, CURDATE()) > 18 AND 18 AND hp.bmi BETWEEN 25 AND 29.9  THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Overweight '),
             DB::raw('CAST(IFNULL(SUM(CASE WHEN TIMESTAMPDIFF(YEAR, personal_profiles.birthdate, CURDATE()) > 18 AND hp.bmi >= 30  THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Obesity'),
-
         )->where('personal_profiles.archive', 0)
             ->first();
         $genders = PersonalProfile::select(
@@ -87,7 +84,6 @@ class DashboardController extends Controller
             DB::raw('CAST(IFNULL(SUM(CASE WHEN sex = "Female" THEN 1 ELSE 0 END), 0) AS UNSIGNED) as Female'),
         )->where('archive', 0)
             ->first();
-            
         return response()->json([
             'ages' => $ageGroups,
             'genders' => $genders,

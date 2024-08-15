@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('personal_profile_id')->references('id')->on('personal_profiles')->onDelete('restrict')->onUpdate('cascade');
             $table->string("philhealth_number", length: 45)->nullable();
-            $table->string('blood_type', length: 5);
+            $table->string('blood_type', length: 45);
             $table->string('maintenance', length: 255)->nullable();
             $table->smallInteger('height');
             $table->smallInteger('weight');

@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
-{   
+{
     private $response;
     public function __construct()
     {
         $this->response = [];
     }
+    // archive user
     public function archiveUser(Request $request)
     {
         try {
@@ -25,19 +26,20 @@ class AuthController extends Controller
             return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
+    // change user password
     public function changePassword(Request $request)
     {
         try {
             $userInfo = User::where('id', $request->id)->get()->first();
             if (Hash::check($request->old_password, $userInfo->password)) {
-                if($request->password === $request->retype_password){
+                if ($request->password === $request->retype_password) {
                     User::where('id', $request->id)->update([
-                        'password' => Hash::make($request->password,[
+                        'password' => Hash::make($request->password, [
                             'rounds' => 12
                         ])
                     ]);
                     $this->response = ['message' => 'Password changed successfully', 'status' => 'success', 'statusCode' => 201];
-                }else{
+                } else {
                     $this->response = ['message' => 'Password did not matched!', 'status' => 'error', 'statusCode' => 403];
                 }
             } else {
@@ -49,6 +51,7 @@ class AuthController extends Controller
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'users', 'changePassword', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
+    // get all users to be diaplayed in the table
     public function getUsers(Request $request)
     {
         try {
@@ -72,16 +75,20 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
+        // form validation
         $request->validate([
             'username' => ['required', 'max:45'],
             'password' => ['required'],
         ]);
+        // check if there is a match username sent from the login
         $user = User::where('username', $request->username)->where('archive', 0)->first();
         if ($user) {
+            // check password if match
             if (Hash::check($request->password, $user->password)) {
+                // create token to be used in all api queries
                 $token = $user->createToken($request->username)->plainTextToken;
                 AuditTrail::createAuditTrail($user->id, $user->id, 'users', 'login', 'success', 'Success', '');
-                return response()->json(['token' => $token, '_role' => $user->role,'message' => 'Logged in successfully', 'status' => 'success']);
+                return response()->json(['token' => $token, '_role' => $user->role, 'message' => 'Logged in successfully', 'status' => 'success']);
             } else {
                 return response()->json(['message' => 'Password was incorrect', 'status' => 'error']);
             }
@@ -92,6 +99,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
+            // delete the token registered in the login
             $request->user()->tokens()->delete();
             return response()->json(['message' => 'Logged out successfully', 'status' => 'success']);
         } catch (\Exception $e) {
@@ -109,12 +117,11 @@ class AuthController extends Controller
                     'middlename' => $request->middlename,
                     'suffix' => $request->suffix,
                     'role' => $request->role,
-                    'password' => Hash::make($request->password,[
+                    'password' => Hash::make($request->password, [
                         'rounds' => 12,
                     ])
                 ]);
                 if ($user) {
-                    // AuditTrail::createAuditTrail($user->id, $user->id, 'users', 'login', 'success', 'Success', '');
                     return response()->json(['message' => 'Registration successful', 'status' => 'success', 'user' => $user], 201);
                 } else {
                     return response()->json(['message' => 'Registration failed', 'status' => 'error',], 500);
