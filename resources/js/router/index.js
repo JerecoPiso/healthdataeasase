@@ -71,11 +71,11 @@ const router = createRouter({
         },
 
           //reports
-          {
-            path: '/healthdataeasase/public/report/household',
-            name: 'householdreport',
-            component: () => import('@/views/pages/reports/household.vue')
-        },
+        //   {
+        //     path: '/healthdataeasase/public/report/household',
+        //     name: 'householdreport',
+        //     component: () => import('@/views/pages/reports/household.vue')
+        // },
      
     ]
 });

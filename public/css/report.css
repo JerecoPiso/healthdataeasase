@@ -1,0 +1,47 @@
+* {
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+}
+
+.household-head {
+    color: green;
+}
+
+.logo {
+    width: 6em;
+    height: 6em;
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+.title {
+    font-size: 1.2em;
+    margin-top: 0em;
+    text-align: center;
+}
+.header {
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+    margin: 1.5em 0 1.5em 0;
+}
+.header-logo {
+    display: inline-block;
+    vertical-align: middle;
+}
+.header-title {
+    display: inline-block;
+    font-size: 1.8em;
+    vertical-align: middle;
+}
