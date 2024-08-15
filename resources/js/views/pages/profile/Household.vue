@@ -295,19 +295,34 @@ const householdInfo = ref({
 const paginator = ref(null)
 const profileInfo = ref({
     household_profile_id: '',
-    lastname: '345345',
-    firstname: '345',
-    middlename: '3454',
+    lastname: '',
+    firstname: '',
+    middlename: '',
     suffix: '',
     birthdate: '',
     age: '',
-    sex: 'Male',
-    civil_status: 'Single',
-    educational_attainment: 'Elementary Level',
-    work: 'Farmer',
-    relation_ship_to_head: 'Son',
-    phone_number: '09656585982',
+    sex: '',
+    civil_status: '',
+    educational_attainment: '',
+    work: '',
+    relation_ship_to_head: '',
+    phone_number: '',
 })
+// const profileInfo = ref({
+//     household_profile_id: '',
+//     lastname: '345345',
+//     firstname: '345',
+//     middlename: '3454',
+//     suffix: '',
+//     birthdate: '',
+//     age: '',
+//     sex: 'Male',
+//     civil_status: 'Single',
+//     educational_attainment: 'Elementary Level',
+//     work: 'Farmer',
+//     relation_ship_to_head: 'Son',
+//     phone_number: '09656585982',
+// })
 const personalInfoOnly = ref(true)
 const router = useRouter()
 const search = ref('')
