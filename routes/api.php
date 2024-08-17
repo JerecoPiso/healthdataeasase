@@ -18,6 +18,7 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::delete('archiveUser/{id}', 'archiveUser');
     Route::post('changePassword', 'changePassword')->middleware('auth:sanctum');
     Route::post('getUsers', 'getUsers')->middleware('auth:sanctum');
+    Route::post('getLogs', 'getLogs')->middleware('auth:sanctum');
     Route::post('updateUser', 'updateUser')->middleware('auth:sanctum');
 });
 

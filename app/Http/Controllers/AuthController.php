@@ -73,6 +73,23 @@ class AuthController extends Controller
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
+    public function getLogs(Request $request){
+        try {
+            $logs = AuditTrail::leftJoin('users as u', 'audit_trails.user_id', '=', 'u.id')->where(function ($query) use ($request) {
+                    $query->where('audit_trails.action', 'LIKE', '%' . $request->search . '%')
+                        ->where('audit_trails.status', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('audit_trails.message', 'LIKE', '%' . $request->search . '%');
+                });
+            $totalLogs = $logs->count();
+            $logsPage = $logs->orderBy('audit_trails.id', 'desc')
+                ->skip((intval($request->page) - 1) * ($totalLogs > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
+                ->take(intval($request->recordPerPage))
+                ->get(['audit_trails.*', 'u.username', 'u.firstname', 'u.middlename', 'u.role']);
+            return response()->json(['message' => 'Success', 'status' => 'success', 'logs' => $logsPage, 'count' => $totalLogs]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
     public function login(Request $request)
     {
         // form validation
@@ -87,7 +104,7 @@ class AuthController extends Controller
             if (Hash::check($request->password, $user->password)) {
                 // create token to be used in all api queries
                 $token = $user->createToken($request->username)->plainTextToken;
-                AuditTrail::createAuditTrail($user->id, $user->id, 'users', 'login', 'success', 'Success', '');
+                AuditTrail::createAuditTrail($user->id, $user->id, 'users', 'login', 'success', 'Logged in successfully', '');
                 return response()->json(['token' => $token, '_role' => $user->role, 'message' => 'Logged in successfully', 'status' => 'success']);
             } else {
                 return response()->json(['message' => 'Password was incorrect', 'status' => 'error']);

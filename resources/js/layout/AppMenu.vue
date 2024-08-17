@@ -58,7 +58,6 @@ const model = ref([
             },
         ]
     },
-
     {
         label: 'Admin',
         items: [
@@ -71,6 +70,11 @@ const model = ref([
                 label: 'Reports',
                 icon: 'hi-document-report',
                 to: '/healthdataeasase/public/administrator/reports'
+            },
+            {
+                label: 'Logs',
+                icon: 'co-logstash',
+                to: '/healthdataeasase/public/administrator/logs'
             },
         ]
     },

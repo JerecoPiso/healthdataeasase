@@ -65,7 +65,7 @@ class PersonalProfileController extends Controller
             $profile = PersonalProfile::PersonalProfileWithHealthProfile($request);
             return response()->json(['data' => $profile['profilesPage'], 'count' => $profile['count']]);
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
     public function insertPersonalProfile(Request $request)
