@@ -48,13 +48,14 @@ class HealthProfileController extends Controller
             $vaccinations = PersonalProfile::has('vaccinations')->with(['vaccinations' => function($query) use ($request)  {
                 $query->where('vaccinations.archive',  0);
             }])
+            ->whereRaw('TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) <= ?', [1])
             ->where(function ($query) use ($request) {
                 $query->where('lastname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('firstname', 'LIKE', '%' . $request->search . '%');
             })
             ->where('archive', 0);
             $totalBabies = $vaccinations->count();
-            $babiesPage = $vaccinations->orderBy('id', 'desc')
+            $babiesPage = $vaccinations->orderBy('lastname', 'desc')
                 ->skip((intval($request->page) - 1) * ($totalBabies > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
                 ->take(intval($request->recordPerPage))
                 ->get();

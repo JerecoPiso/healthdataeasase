@@ -115,7 +115,7 @@
 
         </Dialog>
         <!-- <Button label="Show" class="w-[4em]" @click="editHealthModal = true" ><v-icon name="bi-person-plus-fill" scale="1.2"></v-icon></Button> -->
-        <DataTable :value="profiles" tableStyle="min-width: 50rem">
+        <DataTable :value="profiles" scrollable tableStyle="min-width: 50rem">
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center justify-center gap-x-2">
@@ -142,18 +142,23 @@
             <Column field="health_status" sortable header="Health Status"></Column>
             <Column field="maintenance" sortable header="Maintenance"></Column>
             <Column field="status" sortable header="Status"></Column>
-            <Column header="Action" class="min-w-52">
+            <Column header="Action" class="min-w-40"   alignFrozen="right" :frozen="true" >
                 <template #body="slotProps">
-                    <button type="button"
+                    <router-link v-tooltip.top="'View Information'"
+                            :to="{ name: 'viewprofile', params: { id: slotProps.data.id } }"
+                            class=" bg-sky-500 text-white p-2 rounded-sm" >
+                            <v-icon name="bi-eye-fill"></v-icon>
+                        </router-link>
+                    <!-- <button type="button"
                         @click="setForUpdatePersonalProfile(slotProps.data), editPersonalProfileModal = true"
                         class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update personal profile'"><v-icon name="fa-edit"></v-icon></button>
                     <button type="button" @click="setForUpdateHealthProfile(slotProps.data), viewHealthInfoOnly = false, editHealthModal = true"
                         class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update health information'"><v-icon
-                            name="md-healthandsafety-sharp"></v-icon></button>
+                            name="md-healthandsafety-sharp"></v-icon></button> -->
                     <button type="button" @click="setForUpdateHealthProfile(slotProps.data), viewHealthInfoOnly = true, editHealthModal = true"
-                        class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
+                        class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'View health information'"><v-icon
                             name="ri-health-book-line"></v-icon></button>
                     <button type="button" @click="id = slotProps.data.id, confirmArchive()"
@@ -215,7 +220,18 @@ const viewHealthInfoOnly = ref(false)
 watch(
     () => healthInfo.value.weight,
     () => {
-        healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
+        if (healthInfo.value.height) {
+            healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
+        }
+        // healthInfo.value.bmi = calculateBMI(healthInfo.value.weight, healthInfo.value.height)
+    }
+)
+watch(
+    () => healthInfo.value.height,
+    () => {
+        if (healthInfo.value.weight) {
+            healthInfo.value.bmi = parseFloat(calculateBMI(healthInfo.value.weight, healthInfo.value.height))
+        }
     }
 )
 watch(

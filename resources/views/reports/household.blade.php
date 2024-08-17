@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Households</title>
     <link rel="stylesheet" href="{{ $css_path }}">
     <!-- <link rel="stylesheet" href="{{ asset('css/report.css') }}"> -->
 </head>
@@ -39,6 +39,7 @@
     $rowspanCount = 0;
     @endphp
     @if(!empty($profiles) && $profiles->count())
+    <p class="label">Households:</p>
     <div>
         <table>
             <thead>

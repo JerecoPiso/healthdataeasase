@@ -225,7 +225,8 @@
                     <DataTable :value="slotProps.data.personal_profiles">
                         <Column field="lastname" header="Lastname">
                             <template #body="slotProp">
-                                <span v-if="slotProp.data.id === slotProps.data.personal_profile_id" class="bg-sky-500 px-3 py-1 rounded-full text-white">Head</span>
+                                <span v-if="slotProp.data.id === slotProps.data.personal_profile_id"
+                                    class="bg-sky-500 px-3 py-1 rounded-full text-white">Head</span>
                                 {{ slotProp.data.lastname }}
                             </template>
                         </Column>
@@ -237,9 +238,14 @@
                         <Column field="status" header="Status"></Column>
                         <Column header="Action">
                             <template #body="slotProp">
+                                <router-link v-tooltip.top="'View Information'"
+                                    :to="{ name: 'viewprofile', params: { id: slotProps.data.id } }"
+                                    class=" bg-sky-500 text-white py-[6px] px-2 rounded-sm">
+                                    <v-icon name="bi-eye-fill"></v-icon>
+                                </router-link>
                                 <button type="button"
                                     @click="confirmChangeHouseholdHead(slotProp.data.id, slotProps.data.personal_profile_id, slotProps.data.id)"
-                                    class="bg-sky-500 text-white py-1 px-2 rounded-sm"
+                                    class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                                     v-tooltip.top="'Set as household head'"><v-icon
                                         name="fa-user-shield"></v-icon></button>
                                 <button type="button"
@@ -512,7 +518,7 @@ async function updateHousehold() {
 async function setAsSeparateHousehold(personal_profile_id, household_personal_profile_id) {
     if (personal_profile_id != household_personal_profile_id) {
         await getHouseHoldNumber(),
-        householdInfo.value.personal_profile_id = personal_profile_id
+            householdInfo.value.personal_profile_id = personal_profile_id
         separateHouseholdModalVisible.value = true
     } else {
         toast.add({ severity: 'error', summary: 'Error', detail: 'The profile is the head of the household. Please changed the household head first.', life: 3000 });
@@ -533,20 +539,20 @@ function confirmChangeHouseholdHead(personal_profile_id, household_personal_prof
                 label: 'Save'
             },
             accept: async () => {
-                try{
+                try {
                     const data = {
-                    id: household_id,
-                    personal_profile_id: personal_profile_id,
-                    household_personal_profile_id: household_personal_profile_id
-                }
-                const response = await window.axios.post(`${window.baseurl}api/household/changeHouseholdHead`, data, {
-                    headers: {
-                        'Authorization': `Bearer ${VueCookies.get('token')}`
+                        id: household_id,
+                        personal_profile_id: personal_profile_id,
+                        household_personal_profile_id: household_personal_profile_id
                     }
-                })
-                await getHousehold()
-                toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
-                }catch(err){
+                    const response = await window.axios.post(`${window.baseurl}api/household/changeHouseholdHead`, data, {
+                        headers: {
+                            'Authorization': `Bearer ${VueCookies.get('token')}`
+                        }
+                    })
+                    await getHousehold()
+                    toast.add({ severity: response.data.status, summary: response.data.status == 'success' ? 'Success' : 'Error', detail: response.data.message, life: 3000 });
+                } catch (err) {
                     toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
                 }
             },

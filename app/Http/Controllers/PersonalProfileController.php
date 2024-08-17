@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\HealthProfile;
 use Illuminate\Support\Facades\DB;
 use App\Models\AuditTrail;
+use App\Models\PregnancyFormProfile;
 use Carbon\Carbon;
 
 class PersonalProfileController extends Controller
@@ -142,6 +143,7 @@ class PersonalProfileController extends Controller
                     'lastname' => $request->lastname,
                     'firstname' => $request->firstname,
                     'middlename' => $request->middlename,
+                    'suffix' => $request->suffix,
                     'birthdate' => $request->birthdate,
                     'sex' => $request->sex,
                     'civil_status' => $request->civil_status,
@@ -162,5 +164,16 @@ class PersonalProfileController extends Controller
         }
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'updatePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
+    }
+    public function viewProfile(Request $request)
+    {
+        try {
+
+            $profile = PersonalProfile::where('id', $request->id)->get()->first();
+            $health = HealthProfile::where('personal_profile_id', $request->id)->get(['*', 'health_profiles.id as health_id'])->first();
+            return response()->json(['profile' => $profile, 'health' => $health, 'status' => 'success'], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
     }
 }

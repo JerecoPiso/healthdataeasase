@@ -6,7 +6,10 @@
 .household-head {
     color: green;
 }
-
+.label{
+    font-size: 1.3em;
+    font-weight: bold;
+}
 .logo {
     width: 6em;
     height: 6em;

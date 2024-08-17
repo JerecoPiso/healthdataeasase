@@ -53,8 +53,9 @@ import Chart from "primevue/chart";
 import Card from "primevue/card";
 import Checkbox from "primevue/checkbox";
 import Textarea from "primevue/textarea";
-
+import Fieldset from 'primevue/fieldset';
 import {
+    BiEyeFill ,
     BiTrash,
     BiPersonPlusFill,
     BiHouseDoorFill,
@@ -80,10 +81,12 @@ import {
     MdLightmode,
     MdVaccines,
     MdHealthandsafetySharp,
+    OiPersonFill ,
     RiDashboardLine,
     RiHealthBookLine,
 } from "oh-vue-icons/icons";
 addIcons(
+    BiEyeFill ,
     BiTrash,
     BiPersonPlusFill,
     BiHouseDoorFill,
@@ -109,13 +112,14 @@ addIcons(
     MdLightmode,
     MdVaccines,
     MdHealthandsafetySharp,
+    OiPersonFill ,
     RiDashboardLine,
     RiHealthBookLine
 );
 const app = createApp(App);
 app.component("Chart", Chart);
 app.component("Card", Card);
-
+app.component("Fieldset", Fieldset);
 app.component("DataTable", DataTable);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Checkbox", Checkbox);
@@ -134,11 +138,8 @@ app.component("Paginator", Paginator);
 app.component("SelectButton", SelectButton);
 app.component("Toast", Toast);
 app.component("Spinner", Spinner);
-
 app.component("Textarea", Textarea);
-
 app.directive("tooltip", Tooltip);
-
 app.directive("styleclass", StyleClass);
 app.use(router);
 app.use(VueCookies, {

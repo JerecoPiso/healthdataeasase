@@ -10,7 +10,7 @@
                 style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                     <div class="flex items-center justify-center flex-col text-center mb-8">
-                        <img src="@images/stafe.png" alt="" class="h-[10em] w-[20em] -mt-[10em]">
+                        <img src="@images/stafe.png" alt="" class="h-[10em] w-[10em] -mt-[10em]">
                         <!-- <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg"
                             class="mb-8 w-16 shrink-0 mx-auto">
                             <path fill-rule="evenodd" clip-rule="evenodd"

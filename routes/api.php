@@ -33,6 +33,7 @@ Route::prefix('personalprofile')->middleware('auth:sanctum')->controller(Persona
     Route::get('getBabies', 'getBabies');
     Route::post('insertPersonalProfile', 'insertPersonalProfile');
     Route::post('updatePersonalProfile', 'updatePersonalProfile');
+    Route::post('viewProfile', 'viewProfile');
 });
 Route::prefix('household')->middleware('auth:sanctum')->controller(HouseholdProfileController::class)->group(function () {
     Route::delete('archiveHouseholdProfile/{id}', 'archiveHouseholdProfile');

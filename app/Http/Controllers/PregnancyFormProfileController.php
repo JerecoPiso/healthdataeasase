@@ -39,7 +39,7 @@ class PregnancyFormProfileController extends Controller
                         ->orWhere('pregnancy_form_profiles.type_of_delivery', 'LIKE', '%' . $request->search . '%');
                 });
             $totalPregnancies = $pregnancies->count();
-            $pregnanciesPage = $pregnancies->orderBy('profile.lastname', 'asc')
+            $pregnanciesPage = $pregnancies->orderBy('pregnancy_form_profiles.id', 'desc')
                 ->skip((intval($request->page) - 1) * ($totalPregnancies > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
                 ->take(intval($request->recordPerPage))
                 ->get(

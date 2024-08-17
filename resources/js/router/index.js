@@ -44,6 +44,11 @@ const router = createRouter({
                     name: 'pregnancy',
                     component: () => import('@/views/pages/profile/PregnancyForm.vue')
                 },
+                {
+                    path: '/healthdataeasase/public/profile/viewprofile/:id',
+                    name: 'viewprofile',
+                    component: () => import('@/views/pages/profile/ViewProfile.vue')
+                },
                 // admin
                 {
                     path: '/healthdataeasase/public/administrator/users',
