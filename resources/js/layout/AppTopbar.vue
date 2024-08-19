@@ -4,7 +4,8 @@
 
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" @click="onMenuToggle">
-                <i class="pi pi-bars"></i>
+                <!-- <i class="pi pi-bars"></i> -->
+                <v-icon name="fa-bars" scale="1.2"></v-icon>
             </button>
             <router-link to="/" class="layout-topbar-logo">
                 <v-icon name="gi-health-normal" scale="1.4" class="text-green-500"></v-icon>
@@ -32,7 +33,8 @@
         <div class="layout-topbar-actions">
             <div class="layout-config-menu">
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
-                    <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
+                    <v-icon :name="`${isDarkTheme ? 'co-moon' : 'co-sun'}`"></v-icon>
+                    <!-- <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i> -->
                 </button>
                 <!-- <div class="relative">
                   
@@ -47,14 +49,17 @@
 
             <button class="layout-topbar-menu-button layout-topbar-action"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }">
-                <i class="pi pi-ellipsis-v"></i>
+                <v-icon name="fa-ellipsis-v" scale="1.2"></v-icon>
+
             </button>
 
             <div class="layout-topbar-menu hidden lg:block ">
 
                 <div class="layout-topbar-menu-content relative group">
                     <button type="button" class="layout-topbar-action static group" @click="logout()">
-                        <i class="pi pi-user"></i>
+                        <!-- <i class="pi pi-user"></i> -->
+                        <v-icon name="fa-user" scale="1"></v-icon>
+
                         <span>Logout</span>
                     </button>
                     <div class="absolute top-12 bg-white w-[200px] rounded-sm right-0 hidden group-hover:block">

@@ -5,9 +5,9 @@ import vue from '@vitejs/plugin-vue'
 // import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 // import Components from 'unplugin-vue-components/vite';
 export default defineConfig({
-    // optimizeDeps: {
-    //     noDiscovery: true
-    // },
+    optimizeDeps: {
+        noDiscovery: true
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
@@ -23,5 +23,7 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
             '@images': fileURLToPath(new URL('./public/images', import.meta.url)),
         }
-    }
+    },
+   
+    //   base: './', // Adjust the base URL to remove /build/
 });
