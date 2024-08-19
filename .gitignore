@@ -15,6 +15,8 @@ Homestead.yaml
 auth.json
 npm-debug.log
 yarn-error.log
+healthdataease.zip
+database.sql
 /.fleet
 /.idea
 /.vscode
