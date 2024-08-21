@@ -30,7 +30,7 @@
                                     fill="var(--primary-color)" />
                             </g>
                         </svg> -->
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Health Data Easase
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Health Data Ease
                         </div>
                         <span class="text-muted-color font-medium">Login in to continue</span>
                     </div>

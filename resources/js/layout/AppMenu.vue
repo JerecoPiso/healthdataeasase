@@ -9,7 +9,7 @@
 </template>
 <script setup>
 import { onMounted, ref } from 'vue';
-import VueCookies from 'vue-cookies'
+import VueCookies  from 'vue-cookies'
 import AppMenuItem from './AppMenuItem.vue';
 const _role = ref('0')
 const isLoading = ref(true)
