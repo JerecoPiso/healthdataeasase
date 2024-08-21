@@ -23,7 +23,7 @@ onMounted(() => {
 const model = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'ri-dashboard-line', to: '/healthdataeasase/public/' }]
+        items: [{ label: 'Dashboard', icon: 'ri-dashboard-line', to: '/healthdataease/public/' }]
     },
     {
         label: 'Profile',
@@ -31,19 +31,19 @@ const model = ref([
             {
                 label: 'Household',
                 icon: 'bi-house-door-fill',
-                to: '/healthdataeasase/public/profile/household'
+                to: '/healthdataease/public/profile/household'
             },
             {
                 label: 'Personal & Health',
                 icon: 'bi-person-circle',
-                to: '/healthdataeasase/public/profile/personal'
+                to: '/healthdataease/public/profile/personal'
             },
 
 
             {
                 label: 'Pregnancy',
                 icon: 'md-pregnantwoman',
-                to: '/healthdataeasase/public/profile/pregnancy'
+                to: '/healthdataease/public/profile/pregnancy'
             },
 
         ]
@@ -54,7 +54,7 @@ const model = ref([
             {
                 label: 'Vaccination',
                 icon: 'md-vaccines',
-                to: '/healthdataeasase/public/health/vaccination'
+                to: '/healthdataease/public/health/vaccination'
             },
         ]
     },
@@ -64,17 +64,17 @@ const model = ref([
             {
                 label: 'Users',
                 icon: 'fa-users-cog',
-                to: '/healthdataeasase/public/administrator/users'
+                to: '/healthdataease/public/administrator/users'
             },
             {
                 label: 'Reports',
                 icon: 'hi-document-report',
-                to: '/healthdataeasase/public/administrator/reports'
+                to: '/healthdataease/public/administrator/reports'
             },
             {
                 label: 'Logs',
                 icon: 'co-logstash',
-                to: '/healthdataeasase/public/administrator/logs'
+                to: '/healthdataease/public/administrator/logs'
             },
         ]
     },

@@ -4,7 +4,7 @@
 //     history: createWebHistory(),
 //     routes: [
 //         {
-//             path: '/healthdataeasase/public/healthdataeasase/public/',
+//             path: '/healthdataease/public/healthdataease/public/',
 //             name: 'Login',
 //             component: Login
 //         },
@@ -24,64 +24,64 @@ const router = createRouter({
             component: AppLayout,
             children: [
                 {
-                    path: '/healthdataeasase/public/',
+                    path: '/healthdataease/public/',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/healthdataeasase/public/profile/personal',
+                    path: '/healthdataease/public/profile/personal',
                     name: 'personal',
                     component: () => import('@/views/pages/profile/Personal.vue')
                 },
                
                 {
-                    path: '/healthdataeasase/public/profile/household',
+                    path: '/healthdataease/public/profile/household',
                     name: 'household',
                     component: () => import('@/views/pages/profile/Household.vue')
                 },
                 {
-                    path: '/healthdataeasase/public/profile/pregnancy',
+                    path: '/healthdataease/public/profile/pregnancy',
                     name: 'pregnancy',
                     component: () => import('@/views/pages/profile/PregnancyForm.vue')
                 },
                 {
-                    path: '/healthdataeasase/public/profile/viewprofile/:id',
+                    path: '/healthdataease/public/profile/viewprofile/:id',
                     name: 'viewprofile',
                     component: () => import('@/views/pages/profile/ViewProfile.vue')
                 },
                 // admin
                 {
-                    path: '/healthdataeasase/public/administrator/users',
+                    path: '/healthdataease/public/administrator/users',
                     name: 'users',
                     component: () => import('@/views/pages/administrator/Users.vue')
                 },
                 {
-                    path: '/healthdataeasase/public/administrator/reports',
+                    path: '/healthdataease/public/administrator/reports',
                     name: 'reports',
                     component: () => import('@/views/pages/reports/index.vue')
                 },
                 {
-                    path: '/healthdataeasase/public/administrator/logs',
+                    path: '/healthdataease/public/administrator/logs',
                     name: 'logs',
                     component: () => import('@/views/pages/administrator/Logs.vue')
                 },
                 // health
                 {
-                    path: '/healthdataeasase/public/health/vaccination',
+                    path: '/healthdataease/public/health/vaccination',
                     name: 'health',
                     component: () => import('@/views/pages/health/Vaccination.vue')
                 },
             ]
         },
         {
-            path: '/healthdataeasase/public/auth/login',
+            path: '/healthdataease/public/auth/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
         },
 
           //reports
         //   {
-        //     path: '/healthdataeasase/public/report/household',
+        //     path: '/healthdataease/public/report/household',
         //     name: 'householdreport',
         //     component: () => import('@/views/pages/reports/household.vue')
         // },
