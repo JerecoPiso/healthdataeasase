@@ -8,7 +8,7 @@
             <template #header>
                 <div class="flex justify-between">
                     <div class="flex items-center justify-center gap-x-2">
-                   
+
                     </div>
                     <div class="flex  ">
                         <IconField>
@@ -22,7 +22,12 @@
             <Column field="status" header="Status"></Column>
             <Column field="message" header="Message"></Column>
             <Column field="username" header="Username"></Column>
-           
+            <Column  header="Date & Time">
+                <template #body="slotProps">
+
+                        {{ convertDateTime(slotProps.data.created_at) }}
+                </template>
+            </Column>
             <Column field="role" header="Role">
                 <template #body="slotProps">
                     <p class="bg-sky-500 text-xs py-1 rounded-full text-white w-16 text-center"
@@ -31,7 +36,7 @@
                         v-if="slotProps.data.role == 1">BHW</p>
                 </template>
             </Column>
-          
+
             <template #footer>
                 <Paginator v-on:page="getLogs()" ref="paginator" :rows="10" :totalRecords="totalRecords"
                     :rowsPerPageOptions="[10, 25, 50, 100]"></Paginator>
@@ -79,5 +84,19 @@ async function getLogs() {
         console.error(err)
     })
 }
+function convertDateTime(datetime) {
+    let date = new Date(datetime);
+    let formattedDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2)
 
+    let hours = date.getHours()
+    let minues = ('0' + date.getMinutes()).slice(-2)
+    let seconds = ('0' + date.getSeconds()).slice(-2)
+
+    let ampm = hours >= 12 ? 'pm' : 'am'
+    hours = hours % 12 || 12
+
+    let formattedTime = ('0' + hours).slice(-2) + ':'+minues+':'+seconds + ' ' + ampm
+
+    return `${formattedDate} ${formattedTime}`
+}
 </script>

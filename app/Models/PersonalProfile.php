@@ -37,14 +37,14 @@ class PersonalProfile extends Model
     }
     public function scopePersonalProfileWithHealthProfile($query, $request)
     {
-        $profiles = $query->leftJoin('health_profiles AS hp', 'personal_profiles.id', '=', 'hp.personal_profile_id')->where('personal_profiles.archive', 0)
+        $profiles = $query->leftJoin('health_profiles AS hp', 'personal_profiles.id', '=', 'hp.personal_profile_id')->where('personal_profiles.archive', $request->status)
             ->where(function ($query) use ($request) {
                 $query->where('personal_profiles.firstname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('personal_profiles.lastname', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('personal_profiles.middlename', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('hp.health_status', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('hp.maintenance', 'LIKE', '%' . $request->search . '%');
-            });
+            })->where('personal_profiles.status', $request->residentStatus);
         $totalProfiles = $profiles->count();
             $profilesPage = $profiles->orderBy('personal_profiles.id', 'desc')
             ->skip((intval($request->page) - 1) * ($totalProfiles > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))

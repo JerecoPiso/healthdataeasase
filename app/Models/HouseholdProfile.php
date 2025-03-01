@@ -15,7 +15,9 @@ class HouseholdProfile extends Model
         'nhts',
         'electricity',
         'water_supply',
-        'toilet'
+        'toilet',
+        'bhw_user_id',
+        'purok_id'
     ];
     public function personalProfiles(): HasMany
     {

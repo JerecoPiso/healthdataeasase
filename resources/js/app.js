@@ -10,10 +10,13 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import Aura from "@primevue/themes/aura";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
+// import DialogService from 'primevue/dialogservice'
+
 import ToastService from "primevue/toastservice";
 import VueCookies from "vue-cookies";
 import InputText from "primevue/inputtext";
 import Spinner from "./components/Spinner.vue";
+import Asterisk from "./components/Asterisk.vue";
 import ConfirmDialog from "primevue/confirmdialog";
 
 import Button from "primevue/button";
@@ -37,6 +40,8 @@ import Card from "primevue/card";
 import Checkbox from "primevue/checkbox";
 import Textarea from "primevue/textarea";
 import Fieldset from 'primevue/fieldset';
+import RadioButton from 'primevue/radiobutton';
+import MultiSelect from "primevue/multiselect";
 import {
     BiEyeFill ,
     BiTrash,
@@ -72,6 +77,11 @@ import {
     OiPersonFill ,
     RiDashboardLine,
     RiHealthBookLine,
+    CoSettings,
+    CoLocationPin,
+    MdVaccinesRound,
+    FaChild,
+    FaArchive,
 } from "oh-vue-icons/icons";
 addIcons(
     BiEyeFill ,
@@ -108,9 +118,15 @@ addIcons(
     MdHealthandsafetySharp,
     OiPersonFill ,
     RiDashboardLine,
-    RiHealthBookLine
+    RiHealthBookLine,
+    CoSettings,
+    CoLocationPin,
+    MdVaccinesRound,
+    FaChild,
+    FaArchive
 );
 const app = createApp(App);
+app.component('Asterisk', Asterisk)
 app.component("Chart", Chart);
 app.component("Card", Card);
 app.component("Fieldset", Fieldset);
@@ -128,7 +144,9 @@ app.component("InputNumber", InputNumber);
 app.component("DatePicker", DatePicker);
 app.component("Select", Select);
 app.component("InputMask", InputMask);
+app.component("MultiSelect", MultiSelect)
 app.component("Paginator", Paginator);
+app.component('RadioButton', RadioButton)
 app.component("SelectButton", SelectButton);
 app.component("Toast", Toast);
 app.component("Spinner", Spinner);
@@ -145,6 +163,9 @@ app.use(VueCookies, {
     secure: false,
     sameSite: "Lax",
 });
+app.use(ToastService);
+app.use(ConfirmationService);
+// app.use(DialogService);
 app.use(PrimeVue, {
     theme: {
         preset: Aura,
@@ -155,7 +176,7 @@ app.use(PrimeVue, {
 });
 
 app.component("v-icon", OhVueIcon);
-app.use(ToastService);
-app.use(ConfirmationService);
+
+
 
 app.mount("#app");

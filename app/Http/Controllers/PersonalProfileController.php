@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\HealthProfile;
 use Illuminate\Support\Facades\DB;
 use App\Models\AuditTrail;
+use App\Models\HouseholdProfile;
 use App\Models\PregnancyFormProfile;
 use Carbon\Carbon;
 
@@ -23,11 +24,42 @@ class PersonalProfileController extends Controller
             PersonalProfile::where('id', $request->id)->update([
                 'archive' => 1,
             ]);
+            if (HouseholdProfile::where('personal_profile_id', $request->id)->exists()) {
+                HouseholdProfile::where('personal_profile_id', $request->id)->update(['archive' => 1]);
+            }
+            HealthProfile::where('personal_profile_id', $request->id)->update([
+                'archive' => 1,
+            ]);
+            PregnancyFormProfile::where('personal_profile_id', $request->id)->update([
+                'archive' => 1,
+            ]);
             $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
         } catch (\Illuminate\Database\QueryException $e) {
             $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
         }
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'archivePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
+    public function unarchivePersonalProfile(Request $request)
+    {
+        try {
+            PersonalProfile::where('id', $request->id)->update([
+                'archive' => 0,
+            ]);
+            if (HouseholdProfile::where('personal_profile_id', $request->id)->exists()) {
+                HouseholdProfile::where('personal_profile_id', $request->id)->update(['archive' => 0]);
+            }
+            HealthProfile::where('personal_profile_id', $request->id)->update([
+                'archive' => 0,
+            ]);
+            PregnancyFormProfile::where('personal_profile_id', $request->id)->update([
+                'archive' => 0,
+            ]);
+            $this->response = ['message' => 'Successful', 'status' => 'success', 'statusCode' => 201];
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => 'An error has occured', 'status' => 'error', 'data' => $e->getMessage(), 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->user()->id, $request->id, 'personal_profiles', 'unarchivePersonalProfile', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
     public function getBabies()
@@ -82,7 +114,6 @@ class PersonalProfileController extends Controller
             'work' => ['required'],
             'household_profile_id' => ['required'],
             'relation_ship_to_head' => ['required'],
-            'blood_type' => ['required'],
             'height' => ['required'],
             'weight' => ['required'],
             'bmi' => ['required'],

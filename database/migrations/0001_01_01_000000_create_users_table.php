@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('middlename')->nullable();
             $table->string('suffix')->nullable();
             $table->string('password');
+            $table->string('hint');
             $table->smallInteger('role')->default(1)->comment('0 => Admin, 1 => BHW');
             $table->smallInteger('archive')->default(0);
             $table->rememberToken();

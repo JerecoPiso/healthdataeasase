@@ -67,6 +67,11 @@ const model = ref([
                 to: '/healthdataease/public/administrator/users'
             },
             {
+                label: 'Configurations',
+                icon: 'co-settings',
+                to: '/healthdataease/public/administrator/configurations'
+            },
+            {
                 label: 'Reports',
                 icon: 'hi-document-report',
                 to: '/healthdataease/public/administrator/reports'
@@ -76,6 +81,7 @@ const model = ref([
                 icon: 'co-logstash',
                 to: '/healthdataease/public/administrator/logs'
             },
+           
         ]
     },
 

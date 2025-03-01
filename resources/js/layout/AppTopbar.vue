@@ -1,6 +1,5 @@
 <template>
     <div class="layout-topbar">
-        <ConfirmDialog></ConfirmDialog>
 
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" @click="onMenuToggle">
@@ -26,7 +25,7 @@
                     </g>
                 </svg> -->
 
-                <span class="md:text-xl text-base">HEALTHDATAEASA</span>
+                <span class="md:text-xl text-base">HEALTHDATAEASE</span>
             </router-link>
         </div>
 
@@ -96,7 +95,7 @@ async function logout() {
             outlined: true
         },
         acceptProps: {
-            label: 'Save'
+            label: 'Logout'
         },
         accept: async () => {
             await window.axios.post(`${window.baseurl}api/auth/logout`, {}, {

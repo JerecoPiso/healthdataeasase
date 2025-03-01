@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senior Citizens</title>
+    <title>Pregnants</title>
     <link rel="stylesheet" href="{{ $css_path }}">
     <!-- <link rel="stylesheet" href="{{ asset('css/report.css') }}"> -->
 </head>
 <style>
 
 </style>
+
 <body>
     <div class="header">
         <div class="header-logo">
@@ -35,12 +36,17 @@
         </div>
     </div> -->
     @if(!empty($pregnants) && $pregnants->count())
-    <p class="label">Pregnants:</p>
+    <p class="label" style="text-align: center">Pregnants: ({{$purok}})</p>
     <div>
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Age</th>
+                    <th>Work</th>
+
+                    <th>Educational Attainment</th>
+
                     <th>LMP</th>
                     <th>EDC</th>
                     <th>GP</th>
@@ -48,20 +54,27 @@
             </thead>
             <tbody>
                 @foreach($pregnants as $p)
-              
+
                 <tr>
                     <td> {{ $p->lastname . ' ' . $p->firstname . ' ' .  $p->middlename . ' '. $p->suffix }}</td>
+                    <td>{{ $p->age }}</td>
+                    <td>{{ $p->work }}</td>
+                    <td>{{ $p->educational_attainment }}</td>
+
                     <td>{{ $p->lmp }}</td>
                     <td>{{ $p->edc }}</td>
                     <td>{{ $p->gp }}</td>
                 </tr>
-          
+
                 @endforeach
             </tbody>
         </table>
     </div>
+    <p style="margin-top: 20px;">
+    <strong>As of:</strong> {{ \Carbon\Carbon::now()->format('F j, Y g:i a') }}
+    </p>
     @else
-    <p>No senior citizen found.</p>
+    <p style="text-align: center">No result found.</p>
     @endif
 </body>
 

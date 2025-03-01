@@ -1,8 +1,30 @@
 <template>
     <!-- <FloatingConfigurator /> -->
-    <Toast/>
-  
+    <Dialog v-model:visible="forgotPass" modal header="Forgot password" position="top" class="md:w-2/6 w-full"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <form v-if="!continueChangingPass" @submit.prevent="forgotPassword()">
+            <label class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Username</label>
+            <InputText  type="text" placeholder="Username" required class="w-full  mb-2"
+                v-model="forgotPassInfo.username" />
+            <label class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Hint</label>
+            <InputText  type="text" placeholder="Hint" required class="w-full  mb-2"
+                v-model="forgotPassInfo.hint" />
 
+            <Button label="SUBMIT" type="submit" class="w-full mt-2" />
+        </form>
+        <form v-if="continueChangingPass" @submit.prevent="continueForgotPassword()">
+
+            <label class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">New Password</label>
+            <Password v-model="forgotPassInfo.password" placeholder="New Password" :feedback="false" required :toggleMask="true"
+                class="mb-4" fluid>
+            </Password>
+            <label class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Confirm Password</label>
+            <Password v-model="forgotPassInfo.confirmPassword" placeholder="Confirm Password" :feedback="false" required
+                :toggleMask="true" class="mb-4" fluid>
+            </Password>
+            <Button label="SUBMIT" type="submit" class="w-full mt-2" />
+        </form>
+    </Dialog>
     <div
         class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
@@ -12,7 +34,7 @@
                     <div class="flex items-center justify-center flex-col text-center mb-8">
                         <!-- <img src="@images/stafe.png" alt="" class="h-[10em] w-[10em] -mt-[10em]"> -->
                         <img :src="'../../public/images/stafe.png'" alt="" class="h-[10em] w-[10em] -mt-[10em]">
-                        
+
                         <!-- <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg"
                             class="mb-8 w-16 shrink-0 mx-auto">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -43,8 +65,8 @@
 
                         <label
                             class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                        <Password v-model="user.password" placeholder="Password" :feedback="false" required :toggleMask="true"
-                            class="mb-4" fluid>
+                        <Password v-model="user.password" placeholder="Password" :feedback="false" required
+                            :toggleMask="true" class="mb-4" fluid>
                         </Password>
 
                         <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
@@ -60,6 +82,7 @@
                             <v-icon name="la-spinner-solid" class="animate-spin" v-if="loggingIn"></v-icon>
 
                         </Button>
+                        <p class="py-1 cursor-pointer" @click="forgotPass = true">Forgot password?</p>
                     </form>
                 </div>
             </div>
@@ -71,34 +94,82 @@
 // import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 
 import VueCookies from 'vue-cookies';
-import {  ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { useRouter } from 'vue-router'
-// import {  useLayout } from '@/layout/composables/layout';
-// const { toggleDarkMode} = useLayout();
 const router = useRouter()
+const continueChangingPass = ref(false)
 // const checked = ref(false);
+const forgotPass = ref(false)
 const loggingIn = ref(false)
 const user = ref({
     username: '',
     password: ''
 })
+const forgotPassInfo = ref({
+    id: '',
+    username: '',
+    hint: '',
+    password: '',
+    confirmPassword: ''
+})
 const toast = useToast();
+watch(
+    () => forgotPass.value,
+    () => {
+        if (!forgotPass.value) {
+            continueChangingPass.value = false
+        }
+    }
+)
+async function forgotPassword(){
+    try {
+        const response = await window.axios.post(`${window.baseurl}api/auth/forgotPassword`, forgotPassInfo.value)
+        if (response.statusText == "OK" && response.data.status == 'success') {
+            continueChangingPass.value = true;
+            forgotPassInfo.value.id = response.data.id;
+            toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
 
+        } else {
+           toast.add({ severity: 'error', summary: 'Error Message', detail: response.data.message, life: 3000 });
+        }
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error Message', detail: error.response.data.message, life: 3000 });
+        console.log(error.response)
+    }
+}
+async function continueForgotPassword(){
+    try {
+        const response = await window.axios.post(`${window.baseurl}api/auth/continueForgotPassword`, forgotPassInfo.value)
+        if (response.statusText == "OK" && response.data.status == 'success') {
+            toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
+            for(const key in forgotPassInfo.value){
+                forgotPassInfo.value[key] = ''
+            }
+            forgotPass.value = false
+            continueChangingPass.value = false
+        } else {
+           toast.add({ severity: 'error', summary: 'Error Message', detail: response.data.message, life: 3000 });
+        }
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error Message', detail: error.response.data.message, life: 3000 });
+        console.log(error.response)
+    }
+}
 async function login() {
     loggingIn.value = true
     try {
         await window.axios.get(`${window.baseurl}sanctum/csrf-cookie`)
         const response = await window.axios.post(`${window.baseurl}api/auth/login`, user.value)
         // console.log(response)
-        if (response.statusText == "OK" && response.data.status == 'success') {
+        if (response.data.status == 'success') {
             // console.log(response.data)
             VueCookies.set('token', response.data.token)
             VueCookies.set('_role', response.data._role)
             VueCookies.set('authenticated', true)
             loggingIn.value = false
             router.push({ name: 'dashboard' })
-        }else{
+        } else {
             loggingIn.value = false
             toast.add({ severity: 'error', summary: 'Error Message', detail: response.data.message, life: 3000 });
         }
@@ -108,4 +179,3 @@ async function login() {
     }
 }
 </script>
-

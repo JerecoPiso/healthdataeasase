@@ -51,6 +51,47 @@ class AuthController extends Controller
         AuditTrail::createAuditTrail($request->user()->id, $request->id, 'users', 'changePassword', $this->response['status'], $this->response['message'], json_encode($request->all()));
         return response()->json($this->response, $this->response['statusCode']);
     }
+    public function continueForgotPassword(Request $request)
+    {
+        $request->validate([
+            'username' => ['required'],
+            'confirmPassword' => ['required'],
+        ]);
+        try {
+            if ($request->password === $request->confirmPassword) {
+                User::where('id', $request->id)->update([
+                    'password' => Hash::make($request->password, [
+                        'rounds' => 12
+                    ])
+                ]);
+                $this->response = ['message' => 'Password changed successfully', 'status' => 'success', 'statusCode' => 200];
+            } else {
+                $this->response = ['message' => 'Password did not matched!', 'status' => 'error', 'statusCode' => 403];
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->response = ['message' => $e->getMessage(), 'status' => 'error', 'statusCode' => 500];
+        }
+        AuditTrail::createAuditTrail($request->id, $request->id, 'users', 'forgotPassword', $this->response['status'], $this->response['message'], json_encode($request->all()));
+        return response()->json($this->response, $this->response['statusCode']);
+    }
+    public function forgotPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'username' => ['required'],
+                'hint' => ['required'],
+            ]);
+            // ->where('hint', $request->hint)
+            $user = User::where('username', $request->username)->get(['id'])->first();
+            if ($user) {
+                return response()->json(['message' => 'Username and hint found, continue changing password.', 'status' => 'success', 'id' => $user->id], 200);
+            } else {
+                return response()->json(['message' => 'Username or hint is incorrect!', 'status' => 'error'], 403);
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
     // get all users to be diaplayed in the table
     public function getUsers(Request $request)
     {
@@ -73,13 +114,25 @@ class AuthController extends Controller
             return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
         }
     }
-    public function getLogs(Request $request){
+    public function getUsersByRole(Request $request)
+    {
+        try {
+            $users = User::where('archive', 0)
+                ->where('role', $request->role)
+                ->get(['id', 'firstname', 'lastname', 'middlename']);
+            return response()->json(['message' => 'Success', 'status' => 'success',  'users' => $users]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error has occure', 'status' => 'error', 'data' => $e->getMessage()], 500);
+        }
+    }
+    public function getLogs(Request $request)
+    {
         try {
             $logs = AuditTrail::leftJoin('users as u', 'audit_trails.user_id', '=', 'u.id')->where(function ($query) use ($request) {
-                    $query->where('audit_trails.action', 'LIKE', '%' . $request->search . '%')
-                        ->where('audit_trails.status', 'LIKE', '%' . $request->search . '%')
-                        ->orWhere('audit_trails.message', 'LIKE', '%' . $request->search . '%');
-                });
+                $query->where('audit_trails.action', 'LIKE', '%' . $request->search . '%')
+                    ->where('audit_trails.status', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('audit_trails.message', 'LIKE', '%' . $request->search . '%');
+            });
             $totalLogs = $logs->count();
             $logsPage = $logs->orderBy('audit_trails.id', 'desc')
                 ->skip((intval($request->page) - 1) * ($totalLogs > intval($request->recordPerPage) ? intval($request->recordPerPage) : 0))
@@ -124,7 +177,15 @@ class AuthController extends Controller
         }
     }
     public function register(Request $request)
-    {
+    {   
+        $request->validate([
+            'username' => ['required'],
+            'firstname' => ['required'],
+            'lastname' => ['required'],
+            'password' => ['required'],
+            'hint' => ['required'],
+           
+        ]);
         try {
             if (User::where('username', $request->username)->get(['id'])->count() == 0) {
                 $user = User::create([
@@ -133,7 +194,8 @@ class AuthController extends Controller
                     'lastname' => $request->lastname,
                     'middlename' => $request->middlename,
                     'suffix' => $request->suffix,
-                    'role' => $request->role,
+                    'hint' => $request->hint,
+                    'role' => intval($request->role),
                     'password' => Hash::make($request->password, [
                         'rounds' => 12,
                     ])
@@ -151,7 +213,15 @@ class AuthController extends Controller
         }
     }
     public function updateUser(Request $request)
-    {
+    {   
+        $request->validate([
+            'username' => ['required'],
+            'firstname' => ['required'],
+            'lastname' => ['required'],
+        
+            'hint' => ['required'],
+           
+        ]);
         try {
             if (User::where('username', $request->username)->whereNot('id', $request->id)->get(['id'])->count() == 0) {
                 User::where('id', $request->id)->update([
@@ -160,7 +230,8 @@ class AuthController extends Controller
                     'lastname' => $request->lastname,
                     'middlename' => $request->middlename,
                     'suffix' => $request->suffix,
-                    'role' => $request->role,
+                    'hint' => $request->hint,
+                    'role' =>  intval($request->role),
                 ]);
                 $this->response = ['message' => 'Updated successfully', 'status' => 'success', 'statusCode' => 201];
             } else {

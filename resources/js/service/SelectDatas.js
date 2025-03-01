@@ -3,13 +3,14 @@ export const blood_type = [
     { name: 'B' },
     { name: 'AB' },
     { name: 'O' },
-    { name: 'NA' },
+    { name: 'UNKNOWN' },
     { name: 'Other(specify)' }
 ]
 export const civil_status = [
     { name: 'Single' },
     { name: 'Married' },
     { name: 'Live In' },
+    { name: 'Separated' },
     { name: 'Widow' }
 ]
 
@@ -130,4 +131,9 @@ export const work = [
     { name: 'Unemployed' },
     { name: 'N/A' },
     { name: 'Other(specify)' },
+]
+
+export const status = [
+    { name: 'Active', value: 0 },
+    { name: 'Archive', value: 1 }
 ]

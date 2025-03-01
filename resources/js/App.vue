@@ -1,6 +1,9 @@
 <template>
      <main class=" dark:bg-gray-900 h-screen">
         <RouterView />
+        <Toast />
+
+        <ConfirmDialog />
     </main>
 </template>
 <script setup>

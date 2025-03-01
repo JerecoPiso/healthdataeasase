@@ -2,23 +2,27 @@
     <Spinner v-if="isLoading" />
 
     <div class="card flex flex-col gap-4" v-if="!isLoading">
-        <Toast />
-        <ConfirmDialog></ConfirmDialog>
         <Dialog v-model:visible="addUpdateModalVisible" maximizable modal header="User Form" position="top"
             class="md:w-3/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="!updateUserOrNot ? register() : updateUser()">
 
                 <div class="grid grid-cols-3 gap-2 mt-1">
                     <div class="md:col-span-1 col-span-3">
-                        <label for="">Username</label>
+                        <label for="">Username
+                            <Asterisk />
+                        </label>
                         <InputText class="w-full" v-model="userinfo.username" required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
-                        <label for="">Lastname</label>
+                        <label for="">Lastname
+                            <Asterisk />
+                        </label>
                         <InputText class="w-full" v-model="userinfo.lastname" required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
-                        <label for="">Firstname</label>
+                        <label for="">Firstname
+                            <Asterisk />
+                        </label>
                         <InputText class="w-full" v-model="userinfo.firstname" required />
                     </div>
                     <div class="md:col-span-1 col-span-3">
@@ -30,14 +34,38 @@
                         <InputText class="w-full" v-model="userinfo.suffix" />
                     </div>
                     <div class="md:col-span-1 col-span-3" v-if="!updateUserOrNot">
-                        <label for="">Password</label>
+                        <label for="">Password
+                            <Asterisk />
+                        </label>
                         <Password v-model="userinfo.password" placeholder="Password" toggleMask required
                             :toggleMask="true" class="mb-4" fluid>
                         </Password>
                     </div>
                 </div>
+                <label for="">Hint   <Asterisk /></label>
+                <InputText class="w-full" v-model="userinfo.hint" />
                 <label for="">Admin</label> <br />
-                <Checkbox v-model="isAdmin" binary />
+                <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center">
+                            <RadioButton v-model="userinfo.role" :value="0" />
+                            <label class="ml-2">ADMIN</label>
+                        </div>
+                        <div class="flex items-center">
+                            <RadioButton v-model="userinfo.role" :value="1" />
+                            <label class="ml-2">BHW</label>
+                        </div>
+                        <div class="flex items-center">
+                            <RadioButton v-model="userinfo.role" :value="2" />
+                            <label class="ml-2">VACCINATOR</label>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- <Checkbox v-model="isAdmin" binary />
+                <input type="radio"> -->
                 <Button :label="!updateUserOrNot ? 'SUBMIT' : 'UPDATE'" type="submit" class="w-full mt-2" />
             </form>
 
@@ -46,15 +74,15 @@
             class="md:w-2/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="changePassword()">
 
-                <label for="">Old Password</label>
+                <label for="">Old Password   <Asterisk /></label>
                 <Password v-model="userinfo.old_password" :feedback="false" placeholder="Password" required
                     class="mb-4 w-full" fluid>
                 </Password>
-                <label for="">New Password</label>
+                <label for="">New Password   <Asterisk /></label>
                 <Password v-model="userinfo.password" placeholder="Password" toggleMask required :toggleMask="true"
                     class="mb-4" fluid>
                 </Password>
-                <label for="">Re-type Password</label>
+                <label for="">Re-type Password   <Asterisk /></label>
                 <Password v-model="userinfo.retype_password" placeholder="Password" V required :toggleMask="true"
                     class="mb-4" fluid>
                 </Password>
@@ -64,7 +92,7 @@
         </Dialog>
         <DataTable :value="users" tableStyle="min-width: 50rem">
             <template #header>
-                <div class="flex justify-between">
+                <div class="flex md:justify-between flex-wrap gap-2">
                     <div class="flex items-center justify-center gap-x-2">
                         <Button label="Show" class="w-[4em]"
                             @click="updateUserOrNot = false, addUpdateModalVisible = true"><v-icon name="fa-user-plus"
@@ -89,6 +117,8 @@
                         v-if="slotProps.data.role == 0">ADMIN</p>
                     <p class="bg-green-500 text-xs py-1 rounded-full text-white w-16 text-center"
                         v-if="slotProps.data.role == 1">BHW</p>
+                    <p class="bg-yellow-500 text-xs py-1 rounded-full text-white w-24 text-center"
+                        v-if="slotProps.data.role == 2">VACCINATOR</p>
                 </template>
             </Column>
             <Column header="Action" class="min-w-48">
@@ -132,7 +162,8 @@ const userinfo = ref({
     firstname: '',
     middlename: '',
     suffix: '',
-    role: 1,
+    hint: '',
+    role: 0,
     old_password: '',
     password: '',
     retype_password: ''
@@ -185,9 +216,9 @@ async function getUsers() {
 }
 async function register() {
     try {
-        if (isAdmin.value) {
-            userinfo.value.role = 0
-        }
+        // if (isAdmin.value) {
+        //     userinfo.value.role = 0
+        // }
         const response = await window.axios.post(`${window.baseurl}api/auth/register`, userinfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
@@ -197,7 +228,7 @@ async function register() {
         toast.add({ severity: response.data.status, summary: 'Success', detail: response.data.message, life: 3000 });
         addUpdateModalVisible.value = false
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 async function changePassword() {
@@ -215,9 +246,9 @@ async function changePassword() {
 }
 async function updateUser() {
     try {
-        if (isAdmin.value) {
-            userinfo.value.role = 0
-        }
+        // if (isAdmin.value) {
+        //     userinfo.value.role = 0
+        // }
         const response = await window.axios.post(`${window.baseurl}api/auth/updateUser`, userinfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
@@ -227,7 +258,7 @@ async function updateUser() {
         toast.add({ severity: response.data.status, summary: 'Success', detail: response.data.message, life: 3000 });
         addUpdateModalVisible.value = false
     } catch (err) {
-        console.log(err)
+        toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
 function confirmArchive() {
@@ -271,7 +302,8 @@ function clearVariables() {
 function setForUpdateUser(user) {
     for (const key in userinfo.value) {
         if (key == 'role') {
-            isAdmin.value = user[key] == 0 ? true : false
+            // isAdmin.value = user[key] == 0 ? true : false
+            userinfo.value['role'] = user[key]
         } else {
             if (key !== 'password' && key !== 'old_password' && key !== 'retype_password') {
                 userinfo.value[key] = user[key]

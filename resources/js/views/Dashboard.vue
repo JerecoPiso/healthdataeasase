@@ -84,7 +84,6 @@
                         <Chart type="bar" :data="maintenanceChart" :options="maintenanceChartOptions" :plugins="plugins"
                             class="w-full" />
                     </div>
-
                 </div>
                 <div class="card mb-0 mt-4 ">
                     <label class="block text-muted-color font-medium mb-4">Health Status</label>
@@ -92,16 +91,15 @@
                         <Chart type="bar" :data="healthStatusChart" :options="healthStatusChartOptions"
                             :plugins="plugins" class="w-full" />
                     </div>
-
                 </div>
             </div>
             <div class="md:col-span-4 col-span-12">
                 <div class="card mb-0">
                     <label class="block text-muted-color font-medium mb-4">Babies Vaccination</label>
-                  
-                        <Chart type="doughnut" :data="vaccinatedBabiesChart" :options="vaccinatedBabiesChartOptions"
-                            :plugins="plugins" class="w-full" />
-                 
+
+                    <Chart type="doughnut" :data="vaccinatedBabiesChart" :options="vaccinatedBabiesChartOptions"
+                        :plugins="plugins" class="w-full" />
+
                 </div>
                 <div class="card mb-0 mt-4">
                     <label class="block text-muted-color font-medium mb-4">Pregnancy</label>
@@ -189,14 +187,12 @@ onMounted(async () => {
     maintenanceChart.value = setBarChartData(true, 'Maintenance', maintenanceDatas.value.labels, maintenanceDatas.value.data)
     maintenanceChartOptions.value = setBarChartOptions()
 
-    
+
     healthStatusChart.value = setBarChartData(true, 'Health Status', healthStatusDatas.value.labels, healthStatusDatas.value.data)
     healthStatusChartOptions.value = setBarChartOptions()
 
-    // Object.entries(genderCounts.value).forEach((key, value) => console.log(key[1]))
-    
-    
-    vaccinatedBabiesChart.value = setDoughnutData(['Vaccinated', 'Not Vaccinated'], [vaccinatedTotal.value, totalBabies.value - vaccinatedTotal.value],  ['#00FFAB', '#92B4EC'])
+
+    vaccinatedBabiesChart.value = setDoughnutData(['Vaccinated', 'Not Vaccinated'], [vaccinatedTotal.value, totalBabies.value - vaccinatedTotal.value], ['#00FFAB', '#92B4EC'])
     vaccinatedBabiesChartOptions.value = setDoughnutOptions()
 
 
@@ -251,12 +247,16 @@ async function getCounts() {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
             }
         })
-        if (response.statusText === "OK") {
-            // console.log(response.data)
-            for (const key in counts.value) {
-                counts.value[key] = response.data.counts[key]
-            }
-        }
+        // console.log(response.data)
+        counts.value.users = response.data.counts['users']
+        counts.value.household = response.data.counts['household']
+        counts.value.personal = response.data.counts['personal']
+        counts.value.health = response.data.counts['health']
+        counts.value.pregnancy = response.data.counts['pregnancy']
+        // for (const key in counts.value) {
+        //     counts.value[key] = response.data.counts[key]
+        // }
+
     } catch (err) {
         console.log(err)
     }

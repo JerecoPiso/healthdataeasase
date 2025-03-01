@@ -35,7 +35,7 @@
         </div>
     </div> -->
     @if(!empty($seniors) && $seniors->count())
-    <p class="label">Senior Citizens:</p>
+    <p class="label" style="text-align: center">Senior Citizens: ({{$purok}})</p>
     <div>
         <table>
             <thead>
@@ -43,6 +43,7 @@
                
                     <th>Name</th>
                     <th>Gender</th>
+                    <th>Age</th>
                     <th>Birthdate</th>
                     <th>Civil Status</th>
                     <th>Educational Attainment</th>
@@ -56,6 +57,7 @@
                 <tr>
                     <td> {{ $s->lastname . ' ' . $s->firstname . ' ' .  $s->middlename . ' '. $s->suffix }}</td>
                     <td>{{ $s->sex }}</td>
+                    <td>{{ $s->age }}</td>
                     <td>{{ $s->birthdate }}</td>
                     <td>{{ $s->civil_status }}</td>
                     <td>{{ $s->educational_attainment }}</td>
@@ -66,8 +68,11 @@
             </tbody>
         </table>
     </div>
+    <p style="margin-top: 20px;">
+    <strong>As of:</strong> {{ \Carbon\Carbon::now()->format('F j, Y g:i a') }}
+    </p>
     @else
-    <p>No senior citizen found.</p>
+    <p style="text-align: center">No result found.</p>
     @endif
 </body>
 

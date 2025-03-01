@@ -65,6 +65,11 @@ const router = createRouter({
                     name: 'logs',
                     component: () => import('@/views/pages/administrator/Logs.vue')
                 },
+                {
+                    path: '/healthdataease/public/administrator/configurations',
+                    name: 'configurations',
+                    component: () => import('@/views/pages/administrator/Configurations.vue')
+                },
                 // health
                 {
                     path: '/healthdataease/public/health/vaccination',

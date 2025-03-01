@@ -31,6 +31,7 @@ class PregnancyFormProfileController extends Controller
         try {
             $pregnancies = PregnancyFormProfile::leftJoin('personal_profiles as profile', 'pregnancy_form_profiles.personal_profile_id',  '=', 'profile.id')
                 ->where('pregnancy_form_profiles.archive', 0)
+                ->where('profile.archive', 0)
                 ->where(function ($query) use ($request) {
                     $query->where('profile.firstname', 'LIKE', '%' . $request->search . '%')
                         ->orWhere('profile.lastname', 'LIKE', '%' . $request->search . '%')
@@ -63,6 +64,7 @@ class PregnancyFormProfileController extends Controller
             'lmp' => ['required'],
             'edc' => ['required'],
             'gp' => ['required'],
+            'status' => ['required'],
         ]);
         try {
             $pregnancy = PregnancyFormProfile::create([

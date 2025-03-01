@@ -1,9 +1,6 @@
 <template>
     <Spinner v-if="isLoading" />
-
     <div class="card flex flex-col gap-4" v-if="!isLoading">
-        <Toast />
-        <ConfirmDialog></ConfirmDialog>
         <Dialog v-model:visible="editPersonalProfileModal" maximizable modal header="Edit Personal Profile"
             position="top" class="md:w-3/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="updatePersonalProfile()">
@@ -64,26 +61,29 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Status</label>
-                        <Select v-model="profileInfo.status" optionValue="name"
-                            :options="profile_status"  optionLabel="name" class="w-full " />
+                        <Select v-model="profileInfo.status" optionValue="name" :options="profile_status"
+                            optionLabel="name" class="w-full " />
                     </div>
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" />
             </form>
 
         </Dialog>
-        <Dialog v-model:visible="editHealthModal" maximizable modal :header="`${!viewHealthInfoOnly ? 'Edit Health Status' : 'View Health Status'}`" position="top"
+        <Dialog v-model:visible="editHealthModal" maximizable modal
+            :header="`${!viewHealthInfoOnly ? 'Edit Health Status' : 'View Health Status'}`" position="top"
             class="md:w-3/6 w-full" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <form @submit.prevent="updateHealthProfile()">
                 <div class="grid grid-cols-3 gap-2">
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Philhealth Number</label>
-                        <InputText class="w-full" v-model="healthInfo.philhealth_number" :disabled="viewHealthInfoOnly" />
+                        <InputText class="w-full" v-model="healthInfo.philhealth_number"
+                            :disabled="viewHealthInfoOnly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Blood Type</label>
                         <Select v-model="healthInfo.blood_type" editable optionValue="name" :options="blood_type"
-                            optionLabel="name" placeholder="Select blood type" class="w-full " :disabled="viewHealthInfoOnly" />
+                            optionLabel="name" placeholder="Select blood type" class="w-full "
+                            :disabled="viewHealthInfoOnly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Maintenance</label>
@@ -92,11 +92,13 @@
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Height(cm)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.height" :disabled="viewHealthInfoOnly" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.height" :disabled="viewHealthInfoOnly"
+                            inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">Weight(kl)</label>
-                        <InputNumber class="w-full" v-model="healthInfo.weight" :disabled="viewHealthInfoOnly" inputId="integeronly" />
+                        <InputNumber class="w-full" v-model="healthInfo.weight" :disabled="viewHealthInfoOnly"
+                            inputId="integeronly" />
                     </div>
                     <div class="md:col-span-1 col-span-3">
                         <label for="">BMI(Body Mass Index)</label>
@@ -108,7 +110,7 @@
                         <Select v-model="healthInfo.health_status" editable optionValue="name" :options="health_status"
                             optionLabel="name" class="w-full " :disabled="viewHealthInfoOnly" />
                     </div>
-                  
+
                 </div>
                 <Button label="Submit" type="submit" class="w-full mt-2" v-if="!viewHealthInfoOnly" />
             </form>
@@ -117,8 +119,12 @@
         <!-- <Button label="Show" class="w-[4em]" @click="editHealthModal = true" ><v-icon name="bi-person-plus-fill" scale="1.2"></v-icon></Button> -->
         <DataTable :value="profiles" scrollable tableStyle="min-width: 50rem">
             <template #header>
-                <div class="flex justify-between">
-                    <div class="flex items-center justify-center gap-x-2">
+                <div class="flex md:justify-between flex-wrap   gap-2">
+                    <div class="flex md:justify-between flex-wrap  gap-2">
+                        <Select v-model="residentStatus" @change="getPersonalProfile()" optionValue="name"
+                            :options="profile_status" optionLabel="name" class="w-56 " />
+                        <Select @change="getPersonalProfile()" v-model="_status" optionValue="value" :options="status"
+                            optionLabel="name" class="w-32 " />
                     </div>
                     <div class="flex  ">
                         <IconField>
@@ -135,21 +141,32 @@
             <Column field="birthdate" header="Birthdate"></Column>
             <Column field="sex" sortable header="Sex"></Column>
             <Column field="civil_status" sortable header="Civil Status"></Column>
-            
+
             <!-- <Column field="phone_number" header="Phone No."></Column> -->
             <Column field="educational_attainment" sortable header="Educational Attainment"></Column>
             <Column field="work" sortable header="Work"></Column>
-            <Column field="health_status" sortable header="Health Status"></Column>
-            <Column field="maintenance" sortable header="Maintenance"></Column>
-            <Column field="status" sortable header="Status"></Column>
-            <Column header="Action" class="min-w-40"   alignFrozen="right" :frozen="true" >
+            <Column header="Health Status">
                 <template #body="slotProps">
-                    <router-link v-tooltip.top="'View Information'"
+                    {{ viewArrayAsString(slotProps.data.health_status) }}
+                </template>
+            </Column>
+            <Column sortable header="Maintenance">
+                <template #body="slotProps">
+                    {{ viewArrayAsString(slotProps.data.maintenance) }}
+                </template>
+            </Column>
+            <Column field="status" sortable header="Status"></Column>
+            <Column header="Action" class="min-w-40" alignFrozen="right" :frozen="true">
+                <template #body="slotProps">
+
+
+                    <div v-if="slotProps.data.archive == 0">
+                        <router-link v-tooltip.top="'View Information'"
                             :to="{ name: 'viewprofile', params: { id: slotProps.data.id } }"
-                            class=" bg-sky-500 text-white p-2 rounded-sm" >
+                            class=" bg-sky-500 text-white p-2 rounded-sm">
                             <v-icon name="bi-eye-fill"></v-icon>
                         </router-link>
-                    <!-- <button type="button"
+                        <!-- <button type="button"
                         @click="setForUpdatePersonalProfile(slotProps.data), editPersonalProfileModal = true"
                         class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update personal profile'"><v-icon name="fa-edit"></v-icon></button>
@@ -157,13 +174,20 @@
                         class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
                         v-tooltip.top="'Update health information'"><v-icon
                             name="md-healthandsafety-sharp"></v-icon></button> -->
-                    <button type="button" @click="setForUpdateHealthProfile(slotProps.data), viewHealthInfoOnly = true, editHealthModal = true"
-                        class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
-                        v-tooltip.top="'View health information'"><v-icon
-                            name="ri-health-book-line"></v-icon></button>
-                    <button type="button" @click="id = slotProps.data.id, confirmArchive()"
-                        class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1" v-tooltip.top="'Archive member'"><v-icon
-                            name="bi-trash"></v-icon></button>
+                        <button type="button"
+                            @click="setForUpdateHealthProfile(slotProps.data), viewHealthInfoOnly = true, editHealthModal = true"
+                            class="bg-emerald-500 text-white py-1 px-2 rounded-sm ml-1"
+                            v-tooltip.top="'View health information'"><v-icon
+                                name="ri-health-book-line"></v-icon></button>
+                        <button type="button" @click="id = slotProps.data.id, confirmArchive()"
+                            class="bg-red-500 text-white py-1 px-2 rounded-sm ml-1"
+                            v-tooltip.top="'Archive member'"><v-icon name="bi-trash"></v-icon></button>
+                    </div>
+                    <div v-else>
+                        <button type="button" @click="confirmUnarchive(slotProps.data.id)"
+                            class="bg-sky-500 text-white py-1 px-2 rounded-sm ml-1"
+                            v-tooltip.top="'Unarchive personal profile'"><v-icon name="fa-archive"></v-icon></button>
+                    </div>
                 </template>
             </Column>
             <template #footer>
@@ -178,7 +202,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import { calculateBMI, calculateAge } from '@/service/Calculations.js'
-import { civil_status, blood_type, educational_attainment, health_status, maintenance, relationship_to_head, sex, work, profile_status } from '@/service/SelectDatas.js'
+import { civil_status, blood_type, educational_attainment, health_status, status, maintenance, relationship_to_head, sex, work, profile_status } from '@/service/SelectDatas.js'
 import VueCookies from 'vue-cookies';
 const confirm = useConfirm();
 const editPersonalProfileModal = ref(false)
@@ -193,6 +217,8 @@ const healthInfo = ref({
     bmi: 0,
     health_status: ''
 })
+const _status = ref(0)
+const residentStatus = ref('Active')
 const id = ref(0)
 const isLoading = ref(true)
 const paginator = ref(null)
@@ -286,13 +312,17 @@ async function getPersonalProfile() {
         data = {
             page: 1,
             recordPerPage: 10,
-            search: search.value
+            search: search.value,
+            residentStatus: residentStatus.value,
+            status: _status.value
         }
     } else {
         data = {
             page: paginator.value.page + 1,
             recordPerPage: paginator.value.d_rows,
-            search: search.value
+            search: search.value,
+            residentStatus: residentStatus.value,
+            status: _status.value
         }
     }
     await window.axios.post(`${window.baseurl}api/personalprofile/getPersonalProfile`, data, {
@@ -318,7 +348,7 @@ function confirmArchive() {
             outlined: true
         },
         acceptProps: {
-            label: 'Save'
+            label: 'Save',
         },
         accept: async () => {
             await window.axios.delete(`${window.baseurl}api/personalprofile/archivePersonalProfile/${id.value}`, {
@@ -335,6 +365,34 @@ function confirmArchive() {
     });
 
 }
+function confirmUnarchive(id) {
+    confirm.require({
+        message: 'Are you sure you want to unarchive?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Save',
+        },
+        accept: async () => {
+            await window.axios.delete(`${window.baseurl}api/personalprofile/unarchivePersonalProfile/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${VueCookies.get('token')}`
+                }
+            })
+            await getPersonalProfile()
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Unarchived successfully', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+
+}
 function setForUpdatePersonalProfile(profile) {
     for (const key in profileInfo.value) {
         profileInfo.value[key] = profile[key]
@@ -343,6 +401,17 @@ function setForUpdatePersonalProfile(profile) {
 function setForUpdateHealthProfile(profile) {
     for (const key in healthInfo.value) {
         healthInfo.value[key] = profile[key]
+    }
+}
+function viewArrayAsString(data) {
+    if (data) {
+        let health_status = '';
+        JSON.parse(data).forEach(el => {
+            health_status += el.name + ', '
+        })
+        return health_status.substring(0, health_status.length - 2)
+    } else {
+        return ''
     }
 }
 </script>

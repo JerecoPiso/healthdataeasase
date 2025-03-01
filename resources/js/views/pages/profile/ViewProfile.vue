@@ -8,15 +8,19 @@
                     <form @submit.prevent="updatePersonalProfile()">
                         <div class="grid grid-cols-3 gap-2">
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Lastname</label>
-                                <InputText class="w-full" v-model="profileInfo.lastname" />
+                                <label for="">Lastname
+                                    <Asterisk />
+                                </label>
+                                <InputText class="w-full" v-model="profileInfo.lastname" required />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Firstname</label>
-                                <InputText class="w-full" v-model="profileInfo.firstname" />
+                                <label for="">Firstname
+                                    <Asterisk />
+                                </label>
+                                <InputText class="w-full" v-model="profileInfo.firstname" required />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Middlename</label>
+                                <label for="">Middlename </label>
                                 <InputText class="w-full" v-model="profileInfo.middlename" />
                             </div>
                             <div class="md:col-span-1 col-span-3">
@@ -24,7 +28,9 @@
                                 <InputText class="w-full" v-model="profileInfo.suffix" />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Birthdate</label>
+                                <label for="">Birthdate
+                                    <Asterisk />
+                                </label>
                                 <DatePicker class="w-full" v-model="profileInfo.birthdate" dateFormat="yy-mm-dd" />
                             </div>
                             <div class="md:col-span-1 col-span-3">
@@ -32,12 +38,16 @@
                                 <InputText class="w-full" v-model="profileInfo.age" disabled />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Sex</label>
+                                <label for="">Sex
+                                    <Asterisk />
+                                </label>
                                 <Select v-model="profileInfo.sex" optionValue="name" :options="sex" optionLabel="name"
                                     class="w-full " />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Civil Status</label>
+                                <label for="">Civil Status
+                                    <Asterisk />
+                                </label>
                                 <Select v-model="profileInfo.civil_status" optionValue="name" :options="civil_status"
                                     optionLabel="name" class="w-full " />
                             </div>
@@ -47,22 +57,30 @@
                                     placeholder="99999999999" class="w-full" />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Educational Attainment</label>
+                                <label for="">Educational Attainment
+                                    <Asterisk />
+                                </label>
                                 <Select v-model="profileInfo.educational_attainment" optionValue="name"
                                     :options="educational_attainment" editable optionLabel="name" class="w-full " />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Work</label>
+                                <label for="">Work
+                                    <Asterisk />
+                                </label>
                                 <Select v-model="profileInfo.work" optionValue="name" :options="work" editable
                                     optionLabel="name" class="w-full " />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Rel. to Family Head</label>
+                                <label for="">Rel. to Family Head
+                                    <Asterisk />
+                                </label>
                                 <Select v-model="profileInfo.relation_ship_to_head" optionValue="name"
                                     :options="relationship_to_head" editable optionLabel="name" class="w-full " />
                             </div>
                             <div class="md:col-span-1 col-span-3">
-                                <label for="">Status</label>
+                                <label for="">Status
+                                    <Asterisk />
+                                </label>
                                 <Select v-model="profileInfo.status" optionValue="name" :options="profile_status"
                                     optionLabel="name" class="w-full " />
                             </div>
@@ -78,30 +96,29 @@
                         <div class="grid grid-cols-3 gap-2">
                             <div class="md:col-span-1 col-span-3">
                                 <label for="">Philhealth Number</label>
-                                <InputText class="w-full" v-model="healthInfo.philhealth_number"
-                                     />
+                                <InputText class="w-full" v-model="healthInfo.philhealth_number" />
                             </div>
                             <div class="md:col-span-1 col-span-3">
                                 <label for="">Blood Type</label>
                                 <Select v-model="healthInfo.blood_type" editable optionValue="name"
                                     :options="blood_type" optionLabel="name" placeholder="Select blood type"
-                                    class="w-full "  />
+                                    class="w-full " />
                             </div>
                             <div class="md:col-span-1 col-span-3">
                                 <label for="">Maintenance</label>
-                                <Select v-model="healthInfo.maintenance" editable optionValue="name"
+                                <!-- <Select v-model="healthInfo.maintenance" editable optionValue="name"
                                     :options="maintenance" optionLabel="name" class="w-full "
-                                    />
+                                    /> -->
+                                <MultiSelect v-model="_maintenance" :options="maintenance" filter optionLabel="name"
+                                    class="w-full " />
                             </div>
                             <div class="md:col-span-1 col-span-3">
                                 <label for="">Height(cm)</label>
-                                <InputNumber class="w-fit" v-model="healthInfo.height"
-                                    inputId="integeronly" fluid />
+                                <InputNumber class="w-fit" v-model="healthInfo.height" inputId="integeronly" fluid />
                             </div>
                             <div class="md:col-span-1 col-span-3">
                                 <label for="">Weight(kl)</label>
-                                <InputNumber class="w-full" v-model="healthInfo.weight"
-                                    inputId="integeronly" fluid />
+                                <InputNumber class="w-full" v-model="healthInfo.weight" inputId="integeronly" fluid />
                             </div>
                             <div class="md:col-span-1 col-span-3">
                                 <label for="">BMI(Body Mass Index)</label>
@@ -109,14 +126,17 @@
                                     :useGrouping="false" disabled />
                             </div>
                             <div class="md:col-span-1 col-span-3">
+
                                 <label for="">Health Status</label>
-                                <Select v-model="healthInfo.health_status" editable optionValue="name"
+                                <MultiSelect v-model="_health_status" :options="health_status" filter optionLabel="name"
+                                    class="w-full " />
+                                <!-- <Select v-model="healthInfo.health_status" editable optionValue="name"
                                     :options="health_status" optionLabel="name" class="w-full "
-                                   />
+                                   /> -->
                             </div>
 
                         </div>
-                        <Button label="Update" type="submit" class="w-full mt-2"/>
+                        <Button label="Update" type="submit" class="w-full mt-2" />
                     </form>
                 </Fieldset>
             </div>
@@ -132,7 +152,8 @@ import { calculateBMI, calculateAge } from '@/service/Calculations.js'
 import { useToast } from "primevue/usetoast";
 
 import VueCookies from 'vue-cookies';
-
+const _health_status = ref([])
+const _maintenance = ref([])
 const route = useRoute()
 const isLoading = ref(true)
 const healthInfo = ref({
@@ -210,34 +231,48 @@ async function updatePersonalProfile() {
 }
 async function updateHealthProfile() {
     try {
+        healthInfo.value.health_status = JSON.stringify(_health_status.value)
+        healthInfo.value.maintenance = JSON.stringify(_maintenance.value)
+
         const response = await window.axios.post(`${window.baseurl}api/healthprofile/updateHealthProfile`, healthInfo.value, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
             }
         })
-    
+        // _health_status.value = []
+        // _maintenance.value = []
         toast.add({ severity: 'success', summary: 'Success', detail: response.data.message, life: 3000 });
     } catch (err) {
         toast.add({ severity: 'error', summary: 'Error', detail: err.response.data.message, life: 3000 });
     }
 }
-async function viewProfile(){
-    try{
-        const response = await window.axios.post(`${window.baseurl}api/personalprofile/viewProfile`, {id: route.params.id }, {
+async function viewProfile() {
+    try {
+        const response = await window.axios.post(`${window.baseurl}api/personalprofile/viewProfile`, { id: route.params.id }, {
             headers: {
                 'Authorization': `Bearer ${VueCookies.get('token')}`
             }
         })
-        if(response.data){
+        if (response.data) {
             for (const key in profileInfo.value) {
                 profileInfo.value[key] = response.data['profile'][key]
             }
             for (const key in healthInfo.value) {
-                healthInfo.value[key] = response.data['health'][key]
+                if (key != 'health_status' && key != 'maintenance') {
+                    healthInfo.value[key] = response.data['health'][key]
+                } else {
+                    if (response.data['health'][key]) {
+                        if (key == 'health_status') {
+                            _health_status.value = JSON.parse(response.data['health'][key])
+                        }else{
+                            _maintenance.value = JSON.parse(response.data['health'][key])
+                        }
+                    }
+                }
             }
         }
-       
-    }catch(err){
+
+    } catch (err) {
         console.log(err)
     }
 }
